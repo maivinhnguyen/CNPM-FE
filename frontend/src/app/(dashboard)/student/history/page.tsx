@@ -23,9 +23,9 @@ import { format } from "date-fns";
 export default function StudentHistoryPage() {
   const user = useAuthStore((s) => s.user);
 
-  const { data: records, isLoading } = useQuery({
+  const { data: sessions, isLoading } = useQuery({
     queryKey: ["my-parking", user?.id],
-    queryFn: () => parkingService.getRecords(user?.id),
+    queryFn: () => parkingService.getSessions(user?.id),
     enabled: !!user,
   });
 
@@ -40,7 +40,7 @@ export default function StudentHistoryPage() {
         description="View all your past parking sessions"
       />
 
-      {records?.length === 0 ? (
+      {sessions?.length === 0 ? (
         <EmptyState
           icon={History}
           title="No parking history"
@@ -55,38 +55,40 @@ export default function StudentHistoryPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>License Plate</TableHead>
+                  <TableHead>Plate (In)</TableHead>
+                  <TableHead>Card</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Check In</TableHead>
                   <TableHead>Check Out</TableHead>
-                  <TableHead>Zone</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {records?.map((record) => (
-                  <TableRow key={record.id}>
+                {sessions?.map((session) => (
+                  <TableRow key={session.id}>
                     <TableCell className="font-mono font-medium">
-                      {record.licensePlate}
+                      {session.plateIn ?? "—"}
+                    </TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {session.cardUid}
                     </TableCell>
                     <TableCell>
-                      {format(new Date(record.checkInTime), "MMM d, yyyy")}
+                      {format(new Date(session.checkInTime), "MMM d, yyyy")}
                     </TableCell>
                     <TableCell>
-                      {format(new Date(record.checkInTime), "h:mm a")}
+                      {format(new Date(session.checkInTime), "h:mm a")}
                     </TableCell>
                     <TableCell>
-                      {record.checkOutTime
-                        ? format(new Date(record.checkOutTime), "h:mm a")
+                      {session.checkOutTime
+                        ? format(new Date(session.checkOutTime), "h:mm a")
                         : "—"}
                     </TableCell>
-                    <TableCell>{record.zone ?? "—"}</TableCell>
                     <TableCell>
                       <Badge
                         variant="secondary"
-                        className={PARKING_STATUS_COLORS[record.status]}
+                        className={PARKING_STATUS_COLORS[session.status]}
                       >
-                        {PARKING_STATUS_LABELS[record.status]}
+                        {PARKING_STATUS_LABELS[session.status]}
                       </Badge>
                     </TableCell>
                   </TableRow>

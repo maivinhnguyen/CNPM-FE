@@ -51,12 +51,12 @@ export function VehicleInfoCard({
               <Badge
                 className={cn(
                   "text-xs h-5 px-1.5",
-                  currentStatus === "checked_in"
+                  currentStatus === "ongoing"
                     ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
                     : "bg-amber-500/15 text-amber-700 dark:text-amber-400"
                 )}
               >
-                {currentStatus === "checked_in" ? "Currently Parked" : "Not Parked"}
+                {currentStatus === "ongoing" ? "Currently Parked" : "Not Parked"}
               </Badge>
             </div>
           )}

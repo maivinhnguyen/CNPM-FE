@@ -1,12 +1,12 @@
 import type {
-  ParkingRecord,
+  ParkingSession,
   ParkingStats,
   HourlyData,
   DailyData,
   VehicleLookupResult,
 } from "@/types";
 import {
-  mockParkingRecords,
+  mockParkingSessions,
   mockParkingStats,
   mockHourlyData,
   mockDailyData,
@@ -14,35 +14,44 @@ import {
   delay,
 } from "@/mock/data";
 
-let records = [...mockParkingRecords];
+// In-memory sessions used by mock implementations
+const sessions = [...mockParkingSessions];
+import { apiClient } from "@/lib/api-client";
+import { ENDPOINTS } from "@/lib/endpoints";
 
 export const parkingService = {
+  // TODO: return apiClient.get<ParkingStats>("/parking/stats");
   async getStats(): Promise<ParkingStats> {
     await delay(400);
     return { ...mockParkingStats };
   },
 
+  // TODO: return apiClient.get<HourlyData[]>("/parking/hourly");
   async getHourlyData(): Promise<HourlyData[]> {
     await delay(400);
     return [...mockHourlyData];
   },
 
+  // TODO: return apiClient.get<DailyData[]>("/parking/daily");
   async getDailyData(): Promise<DailyData[]> {
     await delay(400);
     return [...mockDailyData];
   },
 
-  async getRecords(userId?: string): Promise<ParkingRecord[]> {
+  // TODO: replace with:
+  // const params = userId ? { userId } : undefined;
+  // return apiClient.get<ParkingSession[]>("/parking/sessions", { params });
+  async getSessions(userId?: string): Promise<ParkingSession[]> {
     await delay(500);
     if (userId) {
-      const userVehicleIds = mockVehicles
+      const userPlates = mockVehicles
         .filter((v) => v.ownerId === userId)
-        .map((v) => v.id);
-      return records.filter((r) => userVehicleIds.includes(r.vehicleId));
+        .map((v) => v.licensePlate);
+      return sessions.filter((s) => s.plateIn && userPlates.includes(s.plateIn));
     }
-    return [...records];
+    return [...sessions];
   },
-
+  // This api is not implemented so keep as mock
   async lookupVehicle(licensePlate: string): Promise<VehicleLookupResult> {
     await delay(300);
     const plate = licensePlate.replace(/[-\s]/g, "").toLowerCase();
@@ -56,16 +65,17 @@ export const parkingService = {
       return { found: false };
     }
 
-    const activeRecord = records.find(
-      (r) => r.vehicleId === vehicle.id && r.status === "checked_in"
+    const activeSession = sessions.find(
+      (s) =>
+        s.plateIn?.replace(/[-\s]/g, "").toLowerCase() === plate &&
+        s.status === "ongoing"
     );
 
-    // If vehicle is checked in, include stored images for checkout comparison
     const checkInImages =
-      activeRecord?.checkInFaceImage && activeRecord?.checkInPlateImage
+      activeSession?.imgPlateInPath && activeSession?.imgPersonInPath
         ? {
-            faceImage: activeRecord.checkInFaceImage,
-            plateImage: activeRecord.checkInPlateImage,
+            plateImage: activeSession.imgPlateInPath,
+            personImage: activeSession.imgPersonInPath,
           }
         : undefined;
 
@@ -81,63 +91,34 @@ export const parkingService = {
         ownerStudentId: vehicle.ownerStudentId,
         isRegistered: true,
       },
-      currentStatus: activeRecord ? "checked_in" : "not_parked",
-      lastRecord: activeRecord,
+      currentStatus: activeSession ? "ongoing" : "not_parked",
+      lastSession: activeSession,
       checkInImages,
     };
   },
 
   async checkIn(
-    vehicleId: string,
-    licensePlate: string,
-    ownerName: string,
-    staffName: string,
-    ownerStudentId?: string,
-    faceImage?: string,
-    plateImage?: string
-  ): Promise<ParkingRecord> {
-    await delay(500);
-    const zones = ["A", "B", "C", "D"];
-    const record: ParkingRecord = {
-      id: `p${Date.now()}`,
-      vehicleId,
-      licensePlate,
-      ownerName,
-      ownerStudentId,
-      checkInTime: new Date().toISOString(),
-      status: "checked_in",
-      staffName,
-      zone: zones[Math.floor(Math.random() * zones.length)],
-      checkInFaceImage: faceImage,
-      checkInPlateImage: plateImage,
-    };
-    records.unshift(record);
-    return record;
+    cardUid: string,
+    imgPlateIn: Blob,
+    imgPersonIn: Blob,
+  ): Promise<ParkingSession> {
+    const form = new FormData();
+    form.append("cardUid", cardUid);
+    form.append("imgPlateIn", imgPlateIn);
+    form.append("imgPersonIn", imgPersonIn);
+
+    return apiClient.post<ParkingSession>(ENDPOINTS.SESSIONS.CHECK_IN, form);
   },
 
-  async checkOut(recordId: string): Promise<ParkingRecord> {
-    await delay(500);
-    const idx = records.findIndex((r) => r.id === recordId);
-    if (idx === -1) throw new Error("Record not found");
+  async checkOut(
+    sessionId: number,
+    imgPlateOut: Blob,
+    imgPersonOut: Blob,
+  ): Promise<void> {
+    const form = new FormData();
+    form.append("imgPlateOut", imgPlateOut);
+    form.append("imgPersonOut", imgPersonOut);
 
-    records[idx] = {
-      ...records[idx],
-      checkOutTime: new Date().toISOString(),
-      status: "checked_out",
-    };
-
-    return records[idx];
-  },
-
-  async getCheckInImages(
-    recordId: string
-  ): Promise<{ faceImage: string; plateImage: string } | null> {
-    await delay(200);
-    const record = records.find((r) => r.id === recordId);
-    if (!record?.checkInFaceImage || !record?.checkInPlateImage) return null;
-    return {
-      faceImage: record.checkInFaceImage,
-      plateImage: record.checkInPlateImage,
-    };
+    return apiClient.post(ENDPOINTS.SESSIONS.CHECK_OUT(sessionId), form);
   },
 };

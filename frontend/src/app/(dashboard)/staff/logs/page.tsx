@@ -18,9 +18,9 @@ import { PARKING_STATUS_LABELS, PARKING_STATUS_COLORS } from "@/lib/constants";
 import { format } from "date-fns";
 
 export default function StaffLogsPage() {
-  const { data: records, isLoading } = useQuery({
+  const { data: sessions, isLoading } = useQuery({
     queryKey: ["all-parking"],
-    queryFn: () => parkingService.getRecords(),
+    queryFn: () => parkingService.getSessions(),
   });
 
   if (isLoading) {
@@ -44,45 +44,36 @@ export default function StaffLogsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>License Plate</TableHead>
-                <TableHead>Owner</TableHead>
+                <TableHead>Plate (In)</TableHead>
+                <TableHead>Card</TableHead>
                 <TableHead>Check In</TableHead>
                 <TableHead>Check Out</TableHead>
-                <TableHead>Zone</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {records?.map((record) => (
-                <TableRow key={record.id}>
+              {sessions?.map((session) => (
+                <TableRow key={session.id}>
                   <TableCell className="font-mono font-medium">
-                    {record.licensePlate}
+                    {session.plateIn ?? "—"}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">
+                    {session.cardUid}
                   </TableCell>
                   <TableCell>
-                    <div>
-                      <p className="text-sm font-medium">{record.ownerName}</p>
-                      {record.ownerStudentId && (
-                        <p className="text-xs text-muted-foreground">
-                          {record.ownerStudentId}
-                        </p>
-                      )}
-                    </div>
+                    {format(new Date(session.checkInTime), "h:mm a")}
                   </TableCell>
                   <TableCell>
-                    {format(new Date(record.checkInTime), "h:mm a")}
-                  </TableCell>
-                  <TableCell>
-                    {record.checkOutTime
-                      ? format(new Date(record.checkOutTime), "h:mm a")
+                    {session.checkOutTime
+                      ? format(new Date(session.checkOutTime), "h:mm a")
                       : "—"}
                   </TableCell>
-                  <TableCell>{record.zone ?? "—"}</TableCell>
                   <TableCell>
                     <Badge
                       variant="secondary"
-                      className={PARKING_STATUS_COLORS[record.status]}
+                      className={PARKING_STATUS_COLORS[session.status]}
                     >
-                      {PARKING_STATUS_LABELS[record.status]}
+                      {PARKING_STATUS_LABELS[session.status]}
                     </Badge>
                   </TableCell>
                 </TableRow>

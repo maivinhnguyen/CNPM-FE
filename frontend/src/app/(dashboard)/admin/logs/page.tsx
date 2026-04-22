@@ -18,9 +18,9 @@ import { PARKING_STATUS_LABELS, PARKING_STATUS_COLORS } from "@/lib/constants";
 import { format } from "date-fns";
 
 export default function AdminLogsPage() {
-  const { data: records, isLoading } = useQuery({
+  const { data: sessions, isLoading } = useQuery({
     queryKey: ["all-parking"],
-    queryFn: () => parkingService.getRecords(),
+    queryFn: () => parkingService.getSessions(),
   });
 
   if (isLoading) {
@@ -36,73 +36,66 @@ export default function AdminLogsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">All Parking Records</CardTitle>
+          <CardTitle className="text-base">All Parking Sessions</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>
-                <TableHead>License Plate</TableHead>
-                <TableHead>Owner</TableHead>
-                <TableHead>Staff</TableHead>
+                <TableHead>Card</TableHead>
+                <TableHead>Plate (In)</TableHead>
+                <TableHead>Plate (Out)</TableHead>
                 <TableHead>Check In</TableHead>
                 <TableHead>Check Out</TableHead>
-                <TableHead>Zone</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {records?.map((record) => (
-                <TableRow key={record.id}>
+              {sessions?.map((session) => (
+                <TableRow key={session.id}>
                   <TableCell className="font-mono text-xs text-muted-foreground">
-                    {record.id}
+                    {session.id}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">
+                    {session.cardUid}
                   </TableCell>
                   <TableCell className="font-mono font-medium">
-                    {record.licensePlate}
+                    {session.plateIn ?? "—"}
                   </TableCell>
-                  <TableCell>
-                    <div>
-                      <p className="text-sm">{record.ownerName}</p>
-                      {record.ownerStudentId && (
-                        <p className="text-xs text-muted-foreground">
-                          {record.ownerStudentId}
-                        </p>
-                      )}
-                    </div>
+                  <TableCell className="font-mono">
+                    {session.plateOut ?? "—"}
                   </TableCell>
-                  <TableCell>{record.staffName}</TableCell>
                   <TableCell>
                     <div>
                       <p className="text-sm">
-                        {format(new Date(record.checkInTime), "h:mm a")}
+                        {format(new Date(session.checkInTime), "h:mm a")}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {format(new Date(record.checkInTime), "MMM d")}
+                        {format(new Date(session.checkInTime), "MMM d")}
                       </p>
                     </div>
                   </TableCell>
                   <TableCell>
-                    {record.checkOutTime ? (
+                    {session.checkOutTime ? (
                       <div>
                         <p className="text-sm">
-                          {format(new Date(record.checkOutTime), "h:mm a")}
+                          {format(new Date(session.checkOutTime), "h:mm a")}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {format(new Date(record.checkOutTime), "MMM d")}
+                          {format(new Date(session.checkOutTime), "MMM d")}
                         </p>
                       </div>
                     ) : (
                       "—"
                     )}
                   </TableCell>
-                  <TableCell>{record.zone ?? "—"}</TableCell>
                   <TableCell>
                     <Badge
                       variant="secondary"
-                      className={PARKING_STATUS_COLORS[record.status]}
+                      className={PARKING_STATUS_COLORS[session.status]}
                     >
-                      {PARKING_STATUS_LABELS[record.status]}
+                      {PARKING_STATUS_LABELS[session.status]}
                     </Badge>
                   </TableCell>
                 </TableRow>

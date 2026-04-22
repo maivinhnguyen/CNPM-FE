@@ -1,18 +1,17 @@
-export type ParkingStatus = "checked_in" | "checked_out";
+export type SessionStatus = "ongoing" | "completed";
 
-export interface ParkingRecord {
-  id: string;
-  vehicleId: string;
-  licensePlate: string;
-  ownerName: string;
-  ownerStudentId?: string;
+export interface ParkingSession {
+  id: number;
+  cardUid: string;
+  plateIn?: string;
+  imgPlateInPath?: string;
+  imgPersonInPath?: string;
   checkInTime: string;
+  plateOut?: string;
+  imgPlateOutPath?: string;
+  imgPersonOutPath?: string;
   checkOutTime?: string;
-  status: ParkingStatus;
-  staffName: string;
-  zone?: string;
-  checkInFaceImage?: string;
-  checkInPlateImage?: string;
+  status: SessionStatus;
 }
 
 export interface ParkingStats {
@@ -47,10 +46,10 @@ export interface VehicleLookupResult {
     ownerStudentId?: string;
     isRegistered: boolean;
   };
-  currentStatus?: ParkingStatus | "not_parked";
-  lastRecord?: ParkingRecord;
+  currentStatus?: SessionStatus | "not_parked";
+  lastSession?: ParkingSession;
   checkInImages?: {
-    faceImage: string;
     plateImage: string;
+    personImage: string;
   };
 }

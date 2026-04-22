@@ -1,4 +1,4 @@
-import type { User, Vehicle, ParkingRecord, ParkingStats, HourlyData, DailyData } from "@/types";
+import type { User, Vehicle, ParkingSession, ParkingStats, HourlyData, DailyData } from "@/types";
 
 // ── Mock Users ──────────────────────────────────────────────
 export const mockUsers: User[] = [
@@ -106,101 +106,77 @@ export const mockVehicles: Vehicle[] = [
   },
 ];
 
-// ── Mock Parking Records ────────────────────────────────────
-export const mockParkingRecords: ParkingRecord[] = [
+// ── Mock Parking Sessions ───────────────────────────────────
+export const mockParkingSessions: ParkingSession[] = [
   {
-    id: "p1",
-    vehicleId: "v1",
-    licensePlate: "59F1-12345",
-    ownerName: "Nguyen Van An",
-    ownerStudentId: "SV20210001",
+    id: 1,
+    cardUid: "CARD-001",
+    plateIn: "59F1-12345",
+    imgPlateInPath: "/uploads/sessions/1/plate_in.jpg",
+    imgPersonInPath: "/uploads/sessions/1/person_in.jpg",
     checkInTime: "2026-04-10T07:15:00Z",
-    status: "checked_in",
-    staffName: "Tran Thi Binh",
-    zone: "A",
-    // Stored check-in images for checkout verification comparison
-    checkInFaceImage:
-      "data:image/svg+xml;charset=utf-8," +
-      encodeURIComponent(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">
-          <rect width="300" height="300" fill="#0f172a"/>
-          <circle cx="150" cy="108" r="56" fill="#334155"/>
-          <path d="M60 270 Q60 192 150 192 Q240 192 240 270 Z" fill="#334155"/>
-          <rect x="0" y="0" width="300" height="300" fill="none" stroke="#22c55e" stroke-width="2" opacity="0.4"/>
-          <rect x="55" y="50" width="190" height="190" fill="none" stroke="#22c55e" stroke-width="1.5" opacity="0.5" rx="4"/>
-          <text x="150" y="292" text-anchor="middle" fill="#475569" font-size="9" font-family="monospace">CHECK-IN FACE · 07:15 10/04/2026</text>
-        </svg>`
-      ),
-    checkInPlateImage:
-      "data:image/svg+xml;charset=utf-8," +
-      encodeURIComponent(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200">
-          <rect width="400" height="200" fill="#0f172a"/>
-          <rect x="40" y="52" width="320" height="96" rx="10" fill="#facc15" stroke="#a16207" stroke-width="4"/>
-          <text x="200" y="87" text-anchor="middle" fill="#1c1917" font-size="13" font-family="monospace" font-weight="bold">VIỆT NAM</text>
-          <text x="200" y="128" text-anchor="middle" fill="#1c1917" font-size="34" font-family="monospace" font-weight="bold">59F1-12345</text>
-          <text x="200" y="188" text-anchor="middle" fill="#475569" font-size="9" font-family="monospace">CHECK-IN PLATE · 07:15 10/04/2026</text>
-        </svg>`
-      ),
+    status: "ongoing",
   },
   {
-    id: "p2",
-    vehicleId: "v3",
-    licensePlate: "51D3-11111",
-    ownerName: "Pham Duc Huy",
-    ownerStudentId: "SV20210042",
+    id: 2,
+    cardUid: "CARD-003",
+    plateIn: "51D3-11111",
+    imgPlateInPath: "/uploads/sessions/2/plate_in.jpg",
+    imgPersonInPath: "/uploads/sessions/2/person_in.jpg",
     checkInTime: "2026-04-10T07:30:00Z",
+    plateOut: "51D3-11111",
+    imgPlateOutPath: "/uploads/sessions/2/plate_out.jpg",
+    imgPersonOutPath: "/uploads/sessions/2/person_out.jpg",
     checkOutTime: "2026-04-10T11:45:00Z",
-    status: "checked_out",
-    staffName: "Tran Thi Binh",
-    zone: "B",
+    status: "completed",
   },
   {
-    id: "p3",
-    vehicleId: "v4",
-    licensePlate: "59E1-22222",
-    ownerName: "Vo Thi Mai",
-    ownerStudentId: "SV20220015",
+    id: 3,
+    cardUid: "CARD-004",
+    plateIn: "59E1-22222",
+    imgPlateInPath: "/uploads/sessions/3/plate_in.jpg",
+    imgPersonInPath: "/uploads/sessions/3/person_in.jpg",
     checkInTime: "2026-04-10T08:00:00Z",
-    status: "checked_in",
-    staffName: "Tran Thi Binh",
-    zone: "A",
+    status: "ongoing",
   },
   {
-    id: "p4",
-    vehicleId: "v2",
-    licensePlate: "59C2-67890",
-    ownerName: "Nguyen Van An",
-    ownerStudentId: "SV20210001",
+    id: 4,
+    cardUid: "CARD-002",
+    plateIn: "59C2-67890",
+    imgPlateInPath: "/uploads/sessions/4/plate_in.jpg",
+    imgPersonInPath: "/uploads/sessions/4/person_in.jpg",
     checkInTime: "2026-04-09T07:00:00Z",
+    plateOut: "59C2-67890",
+    imgPlateOutPath: "/uploads/sessions/4/plate_out.jpg",
+    imgPersonOutPath: "/uploads/sessions/4/person_out.jpg",
     checkOutTime: "2026-04-09T17:30:00Z",
-    status: "checked_out",
-    staffName: "Tran Thi Binh",
-    zone: "C",
+    status: "completed",
   },
   {
-    id: "p5",
-    vehicleId: "v1",
-    licensePlate: "59F1-12345",
-    ownerName: "Nguyen Van An",
-    ownerStudentId: "SV20210001",
+    id: 5,
+    cardUid: "CARD-001",
+    plateIn: "59F1-12345",
+    imgPlateInPath: "/uploads/sessions/5/plate_in.jpg",
+    imgPersonInPath: "/uploads/sessions/5/person_in.jpg",
     checkInTime: "2026-04-08T06:45:00Z",
+    plateOut: "59F1-12345",
+    imgPlateOutPath: "/uploads/sessions/5/plate_out.jpg",
+    imgPersonOutPath: "/uploads/sessions/5/person_out.jpg",
     checkOutTime: "2026-04-08T12:00:00Z",
-    status: "checked_out",
-    staffName: "Tran Thi Binh",
-    zone: "A",
+    status: "completed",
   },
   {
-    id: "p6",
-    vehicleId: "v3",
-    licensePlate: "51D3-11111",
-    ownerName: "Pham Duc Huy",
-    ownerStudentId: "SV20210042",
+    id: 6,
+    cardUid: "CARD-003",
+    plateIn: "51D3-11111",
+    imgPlateInPath: "/uploads/sessions/6/plate_in.jpg",
+    imgPersonInPath: "/uploads/sessions/6/person_in.jpg",
     checkInTime: "2026-04-08T08:15:00Z",
+    plateOut: "51D3-11111",
+    imgPlateOutPath: "/uploads/sessions/6/plate_out.jpg",
+    imgPersonOutPath: "/uploads/sessions/6/person_out.jpg",
     checkOutTime: "2026-04-08T16:00:00Z",
-    status: "checked_out",
-    staffName: "Tran Thi Binh",
-    zone: "B",
+    status: "completed",
   },
 ];
 

@@ -27,7 +27,7 @@ export const vehicleService = {
     const newVehicle: Vehicle = {
       id: `v${Date.now()}`,
       ...data,
-      ownerId,
+      ownerId,  
       ownerName,
       registeredAt: new Date().toISOString(),
       isActive: true,

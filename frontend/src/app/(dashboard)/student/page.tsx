@@ -22,16 +22,16 @@ export default function StudentDashboardPage() {
     enabled: !!user,
   });
 
-  const { data: records, isLoading: recordsLoading } = useQuery({
+  const { data: sessions, isLoading: sessionsLoading } = useQuery({
     queryKey: ["my-parking", user?.id],
-    queryFn: () => parkingService.getRecords(user?.id),
+    queryFn: () => parkingService.getSessions(user?.id),
     enabled: !!user,
   });
 
-  const isLoading = vehiclesLoading || recordsLoading;
+  const isLoading = vehiclesLoading || sessionsLoading;
 
-  const activeParking = records?.filter((r) => r.status === "checked_in") ?? [];
-  const recentRecords = records?.slice(0, 5) ?? [];
+  const activeParking = sessions?.filter((s) => s.status === "ongoing") ?? [];
+  const recentSessions = sessions?.slice(0, 5) ?? [];
 
   if (isLoading) {
     return (
@@ -62,13 +62,13 @@ export default function StudentDashboardPage() {
           icon={ParkingCircle}
           description={
             activeParking.length > 0
-              ? `Zone ${activeParking[0]?.zone}`
+              ? `Card ${activeParking[0]?.cardUid}`
               : "No vehicle parked"
           }
         />
         <StatCard
           title="This Month"
-          value={records?.length ?? 0}
+          value={sessions?.length ?? 0}
           icon={Clock}
           description="Total parking sessions"
         />
@@ -95,25 +95,25 @@ export default function StudentDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {activeParking.map((record) => (
+              {activeParking.map((session) => (
                 <div
-                  key={record.id}
+                  key={session.id}
                   className="flex items-center justify-between p-3 rounded-lg bg-background"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-primary/10 text-primary font-mono text-sm font-bold">
-                      {record.zone}
+                      {session.cardUid.slice(-3)}
                     </div>
                     <div>
-                      <p className="font-medium">{record.licensePlate}</p>
+                      <p className="font-medium">{session.plateIn ?? "—"}</p>
                       <p className="text-xs text-muted-foreground">
                         Checked in at{" "}
-                        {format(new Date(record.checkInTime), "h:mm a")}
+                        {format(new Date(session.checkInTime), "h:mm a")}
                       </p>
                     </div>
                   </div>
-                  <Badge className={PARKING_STATUS_COLORS[record.status]}>
-                    {PARKING_STATUS_LABELS[record.status]}
+                  <Badge className={PARKING_STATUS_COLORS[session.status]}>
+                    {PARKING_STATUS_LABELS[session.status]}
                   </Badge>
                 </div>
               ))}
@@ -128,15 +128,15 @@ export default function StudentDashboardPage() {
           <CardTitle className="text-base">Recent Parking History</CardTitle>
         </CardHeader>
         <CardContent>
-          {recentRecords.length === 0 ? (
+          {recentSessions.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">
-              No parking records yet
+              No parking sessions yet
             </p>
           ) : (
             <div className="space-y-3">
-              {recentRecords.map((record) => (
+              {recentSessions.map((session) => (
                 <div
-                  key={record.id}
+                  key={session.id}
                   className="flex items-center justify-between py-3 border-b border-border last:border-0"
                 >
                   <div className="flex items-center gap-3">
@@ -145,22 +145,22 @@ export default function StudentDashboardPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium">
-                        {record.licensePlate}
+                        {session.plateIn ?? "—"}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {format(new Date(record.checkInTime), "MMM d, yyyy")}
+                        {format(new Date(session.checkInTime), "MMM d, yyyy")}
                         {" • "}
-                        {format(new Date(record.checkInTime), "h:mm a")}
-                        {record.checkOutTime &&
-                          ` → ${format(new Date(record.checkOutTime), "h:mm a")}`}
+                        {format(new Date(session.checkInTime), "h:mm a")}
+                        {session.checkOutTime &&
+                          ` → ${format(new Date(session.checkOutTime), "h:mm a")}`}
                       </p>
                     </div>
                   </div>
                   <Badge
                     variant="secondary"
-                    className={PARKING_STATUS_COLORS[record.status]}
+                    className={PARKING_STATUS_COLORS[session.status]}
                   >
-                    {PARKING_STATUS_LABELS[record.status]}
+                    {PARKING_STATUS_LABELS[session.status]}
                   </Badge>
                 </div>
               ))}

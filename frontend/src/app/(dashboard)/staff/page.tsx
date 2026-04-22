@@ -50,6 +50,15 @@ export default function StaffCheckPage() {
   const rearCamera = useCamera({ facingMode: "environment" });
   const { capture } = useCaptureFrame();
 
+  const captureBlob = async (
+    videoRef: React.RefObject<HTMLVideoElement | null>,
+  ): Promise<Blob | null> => {
+    const dataUrl = capture(videoRef);
+    if (!dataUrl) return null;
+    const res = await fetch(dataUrl);
+    return res.blob();
+  };
+
   // ── Lookup ──────────────────────────────────────────────
 
   const handleLookup = useCallback(async (plateStr: string) => {
@@ -64,7 +73,7 @@ export default function StaffCheckPage() {
       if (!lookupResult.found) {
         setAlertType("unregistered");
         setFlowState("alert");
-      } else if (lookupResult.currentStatus === "checked_in") {
+      } else if (lookupResult.currentStatus === "ongoing") {
         setFlowState("review_checkout");
       } else {
         setFlowState("review_checkin");
@@ -94,18 +103,14 @@ export default function StaffCheckPage() {
     setFlowState("capturing");
 
     // Capture frames from both cameras
-    const riderImage = capture(frontCamera.videoRef) ?? undefined;
-    const plateImage = capture(rearCamera.videoRef) ?? undefined;
+    const riderBlob = await captureBlob(frontCamera.videoRef);
+    const plateBlob = await captureBlob(rearCamera.videoRef);
 
     try {
       await parkingService.checkIn(
-        result.vehicle.id,
-        result.vehicle.licensePlate,
-        result.vehicle.ownerName,
-        user.name,
-        result.vehicle.ownerStudentId,
-        riderImage,
-        plateImage
+        "CARD-MOCK",
+        plateBlob ?? new Blob(),
+        riderBlob ?? new Blob(),
       );
       incrementOccupancy();
       toast.success(`✅ ${result.vehicle.licensePlate} — Đã ghi nhận vào bãi`);
@@ -119,11 +124,19 @@ export default function StaffCheckPage() {
   // ── Check-out ───────────────────────────────────────────
 
   const handleCheckOut = async () => {
-    if (!result?.lastRecord) return;
+    if (!result?.lastSession) return;
 
     setFlowState("capturing");
+
+    const riderBlob = await captureBlob(frontCamera.videoRef);
+    const plateBlob = await captureBlob(rearCamera.videoRef);
+
     try {
-      await parkingService.checkOut(result.lastRecord.id);
+      await parkingService.checkOut(
+        result.lastSession.id,
+        plateBlob ?? new Blob(),
+        riderBlob ?? new Blob(),
+      );
       decrementOccupancy();
       toast.success(
         `✅ ${result.vehicle?.licensePlate} — Đã ghi nhận ra bãi`
