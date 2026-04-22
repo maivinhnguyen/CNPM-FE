@@ -17,6 +17,7 @@ import {
   LogOut,
   Loader2,
   ParkingCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -93,7 +94,7 @@ export default function StaffCheckPage() {
     setFlowState("capturing");
 
     // Capture frames from both cameras
-    const faceImage = capture(frontCamera.videoRef) ?? undefined;
+    const riderImage = capture(frontCamera.videoRef) ?? undefined;
     const plateImage = capture(rearCamera.videoRef) ?? undefined;
 
     try {
@@ -103,7 +104,7 @@ export default function StaffCheckPage() {
         result.vehicle.ownerName,
         user.name,
         result.vehicle.ownerStudentId,
-        faceImage,
+        riderImage,
         plateImage
       );
       incrementOccupancy();
@@ -168,13 +169,13 @@ export default function StaffCheckPage() {
             <ParkingCircle className="h-5 w-5 text-primary" />
             Parking Gate
           </h1>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">
             Camera verification system
           </p>
         </div>
         <div className="text-right">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Occupancy</span>
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Occupancy</span>
             <Badge
               variant="secondary"
               className={cn(
@@ -187,10 +188,10 @@ export default function StaffCheckPage() {
                   "bg-emerald-500/15 text-emerald-700"
               )}
             >
-              {currentOccupancy}/{totalCapacity}
+              {currentOccupancy}/{totalCapacity} ({occupancyPercent}%)
             </Badge>
           </div>
-          <div className="h-1 w-32 bg-muted rounded-full overflow-hidden mt-1 ml-auto">
+          <div className="h-1.5 w-32 bg-muted rounded-full overflow-hidden mt-1 ml-auto">
             <div
               className={cn(
                 "h-full rounded-full transition-all",
@@ -214,7 +215,6 @@ export default function StaffCheckPage() {
             frontCamera={frontCamera}
             rearCamera={rearCamera}
             isCheckout={flowState === "review_checkout" || flowState === "alert"}
-            storedFaceImage={result?.checkInImages?.faceImage}
             storedPlateImage={result?.checkInImages?.plateImage}
           />
         </div>
@@ -239,7 +239,7 @@ export default function StaffCheckPage() {
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
                     No Active Session
                   </p>
-                  <p className="text-[10px] text-muted-foreground/60 leading-relaxed max-w-[160px] mx-auto">
+                  <p className="text-xs text-muted-foreground/60 leading-relaxed max-w-[180px] mx-auto">
                     Swipe a card to view vehicle and student information
                   </p>
                 </div>
@@ -298,7 +298,7 @@ export default function StaffCheckPage() {
                     <Button
                       onClick={handleCheckOut}
                       disabled={isProcessing}
-                      className="h-14 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20"
+                      className="h-14 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
                     >
                       {flowState === "capturing" ? (
                         <Loader2 className="h-5 w-5 animate-spin" />
@@ -312,9 +312,10 @@ export default function StaffCheckPage() {
                     <Button
                       variant="outline"
                       onClick={() => handleMismatch("face_mismatch")}
-                      className="h-12 text-[10px] font-bold uppercase tracking-widest border-amber-500/50 text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-500/10"
+                      className="h-12 text-xs font-bold uppercase tracking-widest border-amber-500/50 text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-500/10"
                     >
-                      ⚠ Face Mismatch
+                      <AlertTriangle className="mr-1.5 h-4 w-4" />
+                      Rider Mismatch
                     </Button>
                     <Button
                       variant="ghost"

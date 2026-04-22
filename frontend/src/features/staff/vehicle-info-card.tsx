@@ -32,12 +32,14 @@ export function VehicleInfoCard({
       >
         <div className="flex items-center gap-2">
           <Car className="h-4 w-4 text-primary" />
-          <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Vehicle Info
           </h4>
         </div>
         <div className="space-y-2">
-          <InfoRow icon={Hash} label="Plate" value={vehicle.licensePlate} mono />
+          <div className="px-2.5 py-1.5 rounded-lg bg-muted/50 border border-border">
+            <span className="text-base font-bold font-mono tracking-wider">{vehicle.licensePlate}</span>
+          </div>
           <InfoRow
             icon={Car}
             label="Model"
@@ -48,7 +50,7 @@ export function VehicleInfoCard({
             <div className="pt-0.5">
               <Badge
                 className={cn(
-                  "text-[10px] h-5 px-1.5",
+                  "text-xs h-5 px-1.5",
                   currentStatus === "checked_in"
                     ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
                     : "bg-amber-500/15 text-amber-700 dark:text-amber-400"
@@ -70,7 +72,7 @@ export function VehicleInfoCard({
       >
         <div className="flex items-center gap-2">
           <User className="h-4 w-4 text-primary" />
-          <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Student Info
           </h4>
         </div>
@@ -87,7 +89,7 @@ export function VehicleInfoCard({
           <div className="pt-0.5">
             <Badge
               className={cn(
-                "text-[10px] h-5 px-1.5",
+                "text-xs h-5 px-1.5",
                 vehicle.isRegistered
                   ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
                   : "bg-red-500/15 text-red-700 dark:text-red-400"

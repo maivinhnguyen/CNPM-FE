@@ -94,10 +94,10 @@ export function Sidebar() {
         </div>
         {!collapsed && (
           <div className="flex flex-col overflow-hidden">
-            <span className="font-semibold text-sm tracking-tight">
+            <span className="font-bold text-sm tracking-tight">
               ParkSmart
             </span>
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               Parking Management
             </span>
           </div>
@@ -107,7 +107,7 @@ export function Sidebar() {
       {/* Role badge */}
       {!collapsed && (
         <div className="px-4 py-3">
-          <Badge variant="secondary" className="text-[11px] font-medium">
+          <Badge variant="secondary" className="text-xs font-medium">
             {ROLE_LABELS[role]}
           </Badge>
         </div>
@@ -129,8 +129,8 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm border-l-3 border-sidebar-primary"
+                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground border-l-3 border-transparent"
               )}
             >
               <item.icon
@@ -167,7 +167,7 @@ export function Sidebar() {
             {!collapsed && (
               <div className="flex flex-col text-left overflow-hidden">
                 <span className="text-xs font-medium truncate">{user?.name}</span>
-                <span className="text-[11px] text-muted-foreground truncate">{user?.email}</span>
+                <span className="text-xs text-muted-foreground truncate">{user?.email}</span>
               </div>
             )}
           </DropdownMenuTrigger>
