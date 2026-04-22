@@ -10,14 +10,14 @@ export const ROLE_LABELS: Record<string, string> = {
 };
 
 export const PARKING_STATUS_LABELS: Record<string, string> = {
-  checked_in: "Checked In",
-  checked_out: "Checked Out",
+  ongoing: "Ongoing",
+  completed: "Completed",
   not_parked: "Not Parked",
 };
 
 export const PARKING_STATUS_COLORS: Record<string, string> = {
-  checked_in: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
-  checked_out: "bg-slate-500/15 text-slate-700 dark:text-slate-400",
+  ongoing: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
+  completed: "bg-slate-500/15 text-slate-700 dark:text-slate-400",
   not_parked: "bg-amber-500/15 text-amber-700 dark:text-amber-400",
 };
 
