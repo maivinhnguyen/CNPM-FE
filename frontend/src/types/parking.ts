@@ -1,5 +1,65 @@
 export type SessionStatus = "ongoing" | "completed";
 
+// ── Card Registration ────────────────────────────────────────
+export type CardRequestStatus = "pending" | "approved" | "rejected";
+
+export interface CardRequest {
+  id: string;
+  userId: string;
+  userName: string;
+  studentId: string;
+  vehiclePlate: string;
+  vehicleBrand: string;
+  vehicleModel: string;
+  vehicleColor: string;
+  idCardNumber: string;
+  note?: string;
+  status: CardRequestStatus;
+  cardUid?: string;         // filled when approved
+  rejectedReason?: string;  // filled when rejected
+  submittedAt: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+}
+
+// ── Monthly Pass ─────────────────────────────────────────────
+export type MonthlyPassStatus = "active" | "expired" | "pending";
+
+export interface MonthlyPass {
+  id: string;
+  userId: string;
+  vehicleId: string;
+  vehiclePlate: string;
+  vehicleBrand: string;
+  month: string;            // "2026-05"
+  startDate: string;
+  endDate: string;
+  price: number;
+  status: MonthlyPassStatus;
+  purchasedAt: string;
+}
+
+// ── Wallet ───────────────────────────────────────────────────
+export type TransactionType = "topup" | "payment" | "refund";
+export type PaymentMethod = "bank_qr" | "cash" | "momo";
+
+export interface WalletTransaction {
+  id: string;
+  userId: string;
+  type: TransactionType;
+  amount: number;           // positive = credit, negative = debit
+  description: string;
+  method?: PaymentMethod;
+  status: "completed" | "pending" | "failed";
+  createdAt: string;
+}
+
+export interface Wallet {
+  userId: string;
+  balance: number;
+  transactions: WalletTransaction[];
+}
+
 export interface ParkingSession {
   id: number;
   cardUid: string;

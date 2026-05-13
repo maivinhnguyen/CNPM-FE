@@ -17,6 +17,10 @@ import {
   ChevronLeft,
   ParkingCircle,
   LogOut,
+  CreditCard,
+  CalendarCheck,
+  Wallet,
+  CheckSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -35,11 +39,14 @@ import { ThemeToggle } from "./theme-toggle";
 import { ROLE_LABELS } from "@/lib/constants";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { cardService } from "@/services/card.service";
 
 interface NavItem {
   title: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
+  badge?: number;
 }
 
 const navByRole: Record<UserRole, NavItem[]> = {
@@ -47,6 +54,9 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { title: "Dashboard", href: "/student", icon: LayoutDashboard },
     { title: "My Vehicles", href: "/student/vehicles", icon: Car },
     { title: "Parking History", href: "/student/history", icon: History },
+    { title: "Đăng Ký Thẻ", href: "/student/card", icon: CreditCard },
+    { title: "Vé Xe Tháng", href: "/student/monthly-pass", icon: CalendarCheck },
+    { title: "Ví Tiền", href: "/student/wallet", icon: Wallet },
   ],
   staff: [
     { title: "Check In/Out", href: "/staff", icon: ScanLine },
@@ -56,6 +66,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { title: "Dashboard", href: "/admin", icon: BarChart3 },
     { title: "Users", href: "/admin/users", icon: Users },
     { title: "Vehicles", href: "/admin/vehicles", icon: Car },
+    { title: "Duyệt Thẻ", href: "/admin/card-requests", icon: CheckSquare },
     { title: "System Logs", href: "/admin/logs", icon: FileText },
   ],
 };
@@ -68,13 +79,27 @@ export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
 
   const role = user?.role ?? "student";
-  const items = navByRole[role];
   const initials = user?.name
     ?.split(" ")
     .map((n) => n[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
+  // Fetch pending card request count for admin badge
+  const { data: pendingCount } = useQuery({
+    queryKey: ["pending-card-count"],
+    queryFn: cardService.getPendingCount,
+    enabled: role === "admin",
+    refetchInterval: 30000,
+  });
+
+  const items: NavItem[] = (navByRole[role] ?? []).map((item) => {
+    if (item.href === "/admin/card-requests" && pendingCount) {
+      return { ...item, badge: pendingCount };
+    }
+    return item;
+  });
 
   const handleLogout = () => {
     logout();
@@ -117,7 +142,7 @@ export function Sidebar() {
       <Separator />
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {items.map((item) => {
           const isActive =
             pathname === item.href ||
@@ -140,7 +165,17 @@ export function Sidebar() {
                   isActive ? "text-sidebar-primary" : ""
                 )}
               />
-              {!collapsed && <span>{item.title}</span>}
+              {!collapsed && (
+                <span className="flex-1">{item.title}</span>
+              )}
+              {!collapsed && item.badge && item.badge > 0 && (
+                <span className="flex items-center justify-center h-5 min-w-5 px-1 rounded-full bg-red-500 text-white text-xs font-bold">
+                  {item.badge}
+                </span>
+              )}
+              {collapsed && item.badge && item.badge > 0 && (
+                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
+              )}
             </Link>
           );
         })}
