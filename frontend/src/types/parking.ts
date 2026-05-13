@@ -113,3 +113,31 @@ export interface VehicleLookupResult {
     personImage: string;
   };
 }
+
+// ── Shift Management ─────────────────────────────────────────
+export type ShiftType = "morning" | "afternoon" | "evening" | "night";
+export type ShiftStatus = "scheduled" | "active" | "completed" | "cancelled";
+
+export interface WorkShift {
+  id: string;
+  name: string;
+  type: ShiftType;
+  startTime: string;    // "06:00"
+  endTime: string;      // "14:00"
+  date: string;         // "2026-05-14"
+  staffIds: string[];
+  staffNames: string[];
+  status: ShiftStatus;
+  notes?: string;
+  totalCheckIns?: number;
+  totalCheckOuts?: number;
+  incidentCount?: number;
+}
+
+export interface ShiftAssignment {
+  shiftId: string;
+  staffId: string;
+  staffName: string;
+  assignedAt: string;
+  assignedBy: string;
+}

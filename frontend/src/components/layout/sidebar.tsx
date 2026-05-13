@@ -21,6 +21,7 @@ import {
   CalendarCheck,
   Wallet,
   CheckSquare,
+  CalendarDays,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -67,6 +68,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { title: "Users", href: "/admin/users", icon: Users },
     { title: "Vehicles", href: "/admin/vehicles", icon: Car },
     { title: "Duyệt Thẻ", href: "/admin/card-requests", icon: CheckSquare },
+    { title: "Phân Ca", href: "/admin/shifts", icon: CalendarDays },
     { title: "System Logs", href: "/admin/logs", icon: FileText },
   ],
 };

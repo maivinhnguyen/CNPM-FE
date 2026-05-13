@@ -9,6 +9,7 @@ import type {
   MonthlyPass,
   Wallet,
   WalletTransaction,
+  WorkShift,
 } from "@/types";
 
 // ── Mock Users ──────────────────────────────────────────────
@@ -396,6 +397,102 @@ export const mockWallets: Wallet[] = [
   },
   { userId: "u4", balance: 0, transactions: [] },
   { userId: "u5", balance: 0, transactions: [] },
+];
+
+// ── Mock Work Shifts ───────────────────────────────────────
+const today = new Date().toISOString().slice(0, 10);
+const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+const dayAfter = new Date(Date.now() + 172800000).toISOString().slice(0, 10);
+
+export const mockWorkShifts: WorkShift[] = [
+  {
+    id: "sh1",
+    name: "Ca Sáng",
+    type: "morning",
+    startTime: "06:00",
+    endTime: "14:00",
+    date: today,
+    staffIds: ["u2"],
+    staffNames: ["Tran Thi Binh"],
+    status: "active",
+    totalCheckIns: 47,
+    totalCheckOuts: 12,
+    incidentCount: 0,
+  },
+  {
+    id: "sh2",
+    name: "Ca Chiều",
+    type: "afternoon",
+    startTime: "14:00",
+    endTime: "22:00",
+    date: today,
+    staffIds: [],
+    staffNames: [],
+    status: "scheduled",
+    notes: "Cần bổ sung nhân viên",
+  },
+  {
+    id: "sh3",
+    name: "Ca Sáng",
+    type: "morning",
+    startTime: "06:00",
+    endTime: "14:00",
+    date: yesterday,
+    staffIds: ["u2"],
+    staffNames: ["Tran Thi Binh"],
+    status: "completed",
+    totalCheckIns: 78,
+    totalCheckOuts: 76,
+    incidentCount: 1,
+  },
+  {
+    id: "sh4",
+    name: "Ca Chiều",
+    type: "afternoon",
+    startTime: "14:00",
+    endTime: "22:00",
+    date: yesterday,
+    staffIds: ["u2"],
+    staffNames: ["Tran Thi Binh"],
+    status: "completed",
+    totalCheckIns: 45,
+    totalCheckOuts: 48,
+    incidentCount: 0,
+  },
+  {
+    id: "sh5",
+    name: "Ca Sáng",
+    type: "morning",
+    startTime: "06:00",
+    endTime: "14:00",
+    date: tomorrow,
+    staffIds: [],
+    staffNames: [],
+    status: "scheduled",
+  },
+  {
+    id: "sh6",
+    name: "Ca Chiều",
+    type: "afternoon",
+    startTime: "14:00",
+    endTime: "22:00",
+    date: tomorrow,
+    staffIds: [],
+    staffNames: [],
+    status: "scheduled",
+  },
+  {
+    id: "sh7",
+    name: "Ca Sáng",
+    type: "morning",
+    startTime: "06:00",
+    endTime: "14:00",
+    date: dayAfter,
+    staffIds: [],
+    staffNames: [],
+    status: "scheduled",
+  },
 ];
 
 // ── Helper: simulate network delay ─────────────────────────

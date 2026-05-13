@@ -82,8 +82,36 @@ export const ROUTES = {
     vehicles: "/admin/vehicles",
     logs: "/admin/logs",
     cardRequests: "/admin/card-requests",
+    shifts: "/admin/shifts",
   },
 } as const;
 
 export const DEFAULT_PAGE_SIZE = 10;
 
+export const SHIFT_TYPE_LABELS: Record<string, string> = {
+  morning: "Ca Sáng",
+  afternoon: "Ca Chiều",
+  evening: "Ca Tối",
+  night: "Ca Đêm",
+};
+
+export const SHIFT_TYPE_COLORS: Record<string, string> = {
+  morning: "bg-amber-500/15 text-amber-700 dark:text-amber-400",
+  afternoon: "bg-sky-500/15 text-sky-700 dark:text-sky-400",
+  evening: "bg-violet-500/15 text-violet-700 dark:text-violet-400",
+  night: "bg-slate-500/15 text-slate-700 dark:text-slate-400",
+};
+
+export const SHIFT_STATUS_LABELS: Record<string, string> = {
+  scheduled: "Đã lên lịch",
+  active: "Đang hoạt động",
+  completed: "Hoàn thành",
+  cancelled: "Đã hủy",
+};
+
+export const SHIFT_STATUS_COLORS: Record<string, string> = {
+  scheduled: "bg-blue-500/15 text-blue-700 dark:text-blue-400",
+  active: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
+  completed: "bg-slate-500/15 text-slate-700 dark:text-slate-400",
+  cancelled: "bg-red-500/15 text-red-700 dark:text-red-400",
+};
