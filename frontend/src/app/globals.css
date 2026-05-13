@@ -153,3 +153,14 @@
 ::-webkit-scrollbar-thumb:hover {
   background: oklch(0.5 0 0 / 55%);
 }
+
+/* Force light inputs inside auth pages regardless of dark mode */
+.auth-form input {
+  background-color: white !important;
+  color: rgb(15 23 42) !important;
+  border-color: rgb(203 213 225) !important;
+}
+.auth-form input::placeholder {
+  color: rgb(148 163 184) !important;
+  opacity: 1 !important;
+}
