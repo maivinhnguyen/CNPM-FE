@@ -36,23 +36,23 @@ export default function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="User Management"
-        description="Manage all system users"
+        title="Quản lý người dùng"
+        description="Quản lý tất cả người dùng trong hệ thống"
       />
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">All Users</CardTitle>
+          <CardTitle className="text-base">Tất cả người dùng</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
+                <TableHead>Người dùng</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Student ID</TableHead>
-                <TableHead>Joined</TableHead>
+                <TableHead>Vai trò</TableHead>
+                <TableHead>MSSV</TableHead>
+                <TableHead>Ngày tham gia</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -86,7 +86,7 @@ export default function AdminUsersPage() {
                       {u.studentId ?? "—"}
                     </TableCell>
                     <TableCell>
-                      {format(new Date(u.createdAt), "MMM d, yyyy")}
+                      {format(new Date(u.createdAt), "dd/MM/yyyy")}
                     </TableCell>
                   </TableRow>
                 );

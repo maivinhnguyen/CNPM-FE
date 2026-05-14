@@ -56,30 +56,30 @@ interface NavItem {
 
 const navByRole: Record<UserRole, NavItem[]> = {
   student: [
-    { title: "Dashboard", href: "/student", icon: LayoutDashboard },
-    { title: "My Vehicles", href: "/student/vehicles", icon: Car },
-    { title: "Parking History", href: "/student/history", icon: History },
+    { title: "Tổng quan", href: "/student", icon: LayoutDashboard },
+    { title: "Xe của tôi", href: "/student/vehicles", icon: Car },
+    { title: "Lịch sử gửi xe", href: "/student/history", icon: History },
     { title: "Đăng Ký Thẻ", href: "/student/card", icon: CreditCard },
     { title: "Vé Xe Tháng", href: "/student/monthly-pass", icon: CalendarCheck },
     { title: "Ví Tiền", href: "/student/wallet", icon: Wallet },
   ],
   staff: [
-    { title: "Check In/Out", href: "/staff", icon: ScanLine },
+    { title: "Vào/Ra", href: "/staff", icon: ScanLine },
     { title: "Tra Cứu Xe", href: "/staff/vehicle-lookup", icon: Search },
     { title: "Báo Cáo Sự Cố", href: "/staff/incidents", icon: AlertTriangle },
     { title: "Ca Làm Của Tôi", href: "/staff/my-shift", icon: CalendarClock },
     { title: "Thiết Bị", href: "/staff/devices", icon: Cpu },
-    { title: "Activity Log", href: "/staff/logs", icon: ClipboardList },
+    { title: "Nhật ký hoạt động", href: "/staff/logs", icon: ClipboardList },
   ],
   admin: [
-    { title: "Dashboard", href: "/admin", icon: BarChart3 },
-    { title: "Users", href: "/admin/users", icon: Users },
-    { title: "Vehicles", href: "/admin/vehicles", icon: Car },
+    { title: "Tổng quan", href: "/admin", icon: BarChart3 },
+    { title: "Người dùng", href: "/admin/users", icon: Users },
+    { title: "Phương tiện", href: "/admin/vehicles", icon: Car },
     { title: "Duyệt Thẻ", href: "/admin/card-requests", icon: CheckSquare },
     { title: "Phân Ca", href: "/admin/shifts", icon: CalendarDays },
     { title: "Sự Cố", href: "/admin/incidents", icon: AlertTriangle },
     { title: "Thiết Bị", href: "/admin/devices", icon: Cpu },
-    { title: "System Logs", href: "/admin/logs", icon: FileText },
+    { title: "Nhật ký hệ thống", href: "/admin/logs", icon: FileText },
   ],
 };
 
@@ -136,7 +136,7 @@ export function Sidebar() {
               ParkSmart
             </span>
             <span className="text-xs text-muted-foreground">
-              Parking Management
+              Hệ thống quản lý bãi xe
             </span>
           </div>
         )}
@@ -234,7 +234,7 @@ export function Sidebar() {
               className="text-destructive focus:text-destructive cursor-pointer"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              Log out
+              Đăng xuất
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -248,7 +248,7 @@ export function Sidebar() {
             onClick={() => setCollapsed(!collapsed)}
           >
             <ChevronLeft className="h-4 w-4" />
-            Collapse
+            Thu gọn
           </Button>
           {collapsed && (
             <Button

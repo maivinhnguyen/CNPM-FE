@@ -59,36 +59,36 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Admin Dashboard"
-        description="Real-time parking analytics and management"
+        title="Bảng điều khiển Admin"
+        description="Quản lý và phân tích bãi xe thời gian thực"
       />
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          title="Total Vehicles Today"
+          title="Tổng xe hôm nay"
           value={stats?.totalToday ?? 0}
           icon={Car}
           trend={{ value: 12, isPositive: true }}
-          description="Vehicles checked in today"
+          description="Số lượng xe đã vào bãi hôm nay"
         />
         <StatCard
-          title="Current Occupancy"
+          title="Số xe hiện tại"
           value={`${currentOccupancy} / ${totalCapacity}`}
           icon={ParkingCircle}
-          description={`${occupancyPercent}% capacity used`}
+          description={`${occupancyPercent}% công suất đã sử dụng`}
         />
         <StatCard
-          title="Peak Hour"
+          title="Giờ cao điểm"
           value={stats?.peakHour ?? "—"}
           icon={TrendingUp}
-          description="Highest traffic period"
+          description="Thời gian có lưu lượng cao nhất"
         />
         <StatCard
-          title="Avg Duration"
+          title="Thời gian gửi TB"
           value={stats?.averageDuration ?? "—"}
           icon={Clock}
-          description="Average parking time"
+          description="Thời gian gửi xe trung bình"
         />
       </div>
 
@@ -97,14 +97,14 @@ export default function AdminDashboardPage() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Activity className="h-4 w-4" />
-            Real-Time Occupancy
+            Mật độ xe thời gian thực
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">
-                {currentOccupancy} vehicles parked
+                {currentOccupancy} xe đang đỗ
               </span>
               <span className="font-medium">{occupancyPercent}%</span>
             </div>
@@ -116,7 +116,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>0</span>
-              <span>{totalCapacity} spots</span>
+              <span>{totalCapacity} chỗ</span>
             </div>
           </div>
         </CardContent>
@@ -127,7 +127,7 @@ export default function AdminDashboardPage() {
         {/* Hourly Activity Chart */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Today&apos;s Activity</CardTitle>
+            <CardTitle className="text-base">Hoạt động hôm nay</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[300px]">
@@ -196,7 +196,7 @@ export default function AdminDashboardPage() {
                   <Area
                     type="monotone"
                     dataKey="checkIns"
-                    name="Check Ins"
+                    name="Vào"
                     stroke="oklch(0.588 0.243 264.376)"
                     fill="url(#checkInGrad)"
                     strokeWidth={2}
@@ -204,7 +204,7 @@ export default function AdminDashboardPage() {
                   <Area
                     type="monotone"
                     dataKey="checkOuts"
-                    name="Check Outs"
+                    name="Ra"
                     stroke="oklch(0.72 0.19 145)"
                     fill="url(#checkOutGrad)"
                     strokeWidth={2}
@@ -218,7 +218,7 @@ export default function AdminDashboardPage() {
         {/* Weekly Overview Chart */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Weekly Overview</CardTitle>
+            <CardTitle className="text-base">Tổng quan tuần</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[300px]">
@@ -247,7 +247,7 @@ export default function AdminDashboardPage() {
                   />
                   <Bar
                     dataKey="total"
-                    name="Total Vehicles"
+                    name="Tổng số xe"
                     fill="oklch(0.588 0.243 264.376)"
                     radius={[6, 6, 0, 0]}
                   />
