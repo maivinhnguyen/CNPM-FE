@@ -141,3 +141,28 @@ export interface ShiftAssignment {
   assignedAt: string;
   assignedBy: string;
 }
+
+// ── Incident Report ───────────────────────────────────────
+export type IncidentType =
+  | "wrong_parking"
+  | "damaged_vehicle"
+  | "suspicious"
+  | "unregistered"
+  | "other";
+
+export type IncidentStatus = "open" | "resolved" | "escalated";
+
+export interface Incident {
+  id: string;
+  reportedBy: string;       // staff userId
+  reporterName: string;
+  vehiclePlate?: string;
+  type: IncidentType;
+  description: string;
+  location?: string;
+  status: IncidentStatus;
+  createdAt: string;
+  resolvedAt?: string;
+  resolvedNote?: string;
+}
+

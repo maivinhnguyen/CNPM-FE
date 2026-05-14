@@ -96,7 +96,7 @@ export default function AuthLayout({
 
       {/* ── Right: Form panel — force light mode via CSS vars ── */}
       <div
-        className="flex-1 flex flex-col justify-center items-center bg-white px-8 py-12 lg:px-16"
+        className="auth-form flex-1 flex flex-col justify-center items-center bg-white px-8 py-12 lg:px-16"
         style={{
           "--input":            "oklch(0.92 0.008 240)",
           "--background":       "oklch(0.98 0.005 250)",

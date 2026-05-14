@@ -10,6 +10,7 @@ import type {
   Wallet,
   WalletTransaction,
   WorkShift,
+  Incident,
 } from "@/types";
 
 // ── Mock Users ──────────────────────────────────────────────
@@ -492,6 +493,47 @@ export const mockWorkShifts: WorkShift[] = [
     staffIds: [],
     staffNames: [],
     status: "scheduled",
+  },
+];
+
+// ── Mock Incidents ─────────────────────────────────────────
+export const mockIncidents: Incident[] = [
+  {
+    id: "inc1",
+    reportedBy: "u2",
+    reporterName: "Tran Thi Binh",
+    vehiclePlate: "59G1-99999",
+    type: "unregistered",
+    description: "Xe không có trong hệ thống, chủ xe không có thẻ RFID",
+    location: "Cổng A",
+    status: "resolved",
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    resolvedAt: new Date(Date.now() - 82800000).toISOString(),
+    resolvedNote: "Đã liên hệ chủ xe, yêu cầu đăng ký thẻ",
+  },
+  {
+    id: "inc2",
+    reportedBy: "u2",
+    reporterName: "Tran Thi Binh",
+    vehiclePlate: "51D3-11111",
+    type: "wrong_parking",
+    description: "Xe đậu sai vị trí, chắn lối thoát hiểm",
+    location: "Khu B - Ô số 12",
+    status: "resolved",
+    createdAt: new Date(Date.now() - 172800000).toISOString(),
+    resolvedAt: new Date(Date.now() - 169200000).toISOString(),
+    resolvedNote: "Chủ xe đã di chuyển xe",
+  },
+  {
+    id: "inc3",
+    reportedBy: "u2",
+    reporterName: "Tran Thi Binh",
+    vehiclePlate: "59C2-67890",
+    type: "damaged_vehicle",
+    description: "Xe bị trầy xước gương chiếu hậu bên phải, có thể do va chạm trong bãi",
+    location: "Khu A - Ô số 7",
+    status: "escalated",
+    createdAt: new Date(Date.now() - 3600000).toISOString(),
   },
 ];
 

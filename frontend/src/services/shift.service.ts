@@ -98,4 +98,37 @@ export const shiftService = {
     await delay(400);
     _shifts = _shifts.filter((s) => s.id !== shiftId);
   },
+
+  // Staff confirms shift start
+  confirmStart: async (shiftId: string): Promise<WorkShift> => {
+    await delay(500);
+    const idx = _shifts.findIndex((s) => s.id === shiftId);
+    if (idx === -1) throw new Error("Không tìm thấy ca làm");
+    if (_shifts[idx].status !== "scheduled") throw new Error("Ca không ở trạng thái có thể bắt đầu");
+    _shifts[idx] = { ..._shifts[idx], status: "active" };
+    return _shifts[idx];
+  },
+
+  // Staff confirms shift end with handover note
+  confirmEnd: async (shiftId: string, handoverNote?: string): Promise<WorkShift> => {
+    await delay(500);
+    const idx = _shifts.findIndex((s) => s.id === shiftId);
+    if (idx === -1) throw new Error("Không tìm thấy ca làm");
+    if (_shifts[idx].status !== "active") throw new Error("Ca chưa được bắt đầu");
+    _shifts[idx] = {
+      ..._shifts[idx],
+      status: "completed",
+      notes: handoverNote ? `[Bàn giao] ${handoverNote}` : _shifts[idx].notes,
+    };
+    return _shifts[idx];
+  },
+
+  // Get shift history for a specific staff
+  getStaffShiftHistory: async (staffId: string): Promise<WorkShift[]> => {
+    await delay(300);
+    return _shifts
+      .filter((s) => s.staffIds.includes(staffId))
+      .sort((a, b) => `${b.date}${b.startTime}`.localeCompare(`${a.date}${a.startTime}`));
+  },
 };
+
