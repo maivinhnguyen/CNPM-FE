@@ -25,6 +25,7 @@ import {
   Search,
   AlertTriangle,
   CalendarClock,
+  Cpu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -67,6 +68,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { title: "Tra Cứu Xe", href: "/staff/vehicle-lookup", icon: Search },
     { title: "Báo Cáo Sự Cố", href: "/staff/incidents", icon: AlertTriangle },
     { title: "Ca Làm Của Tôi", href: "/staff/my-shift", icon: CalendarClock },
+    { title: "Thiết Bị", href: "/staff/devices", icon: Cpu },
     { title: "Activity Log", href: "/staff/logs", icon: ClipboardList },
   ],
   admin: [
@@ -76,6 +78,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { title: "Duyệt Thẻ", href: "/admin/card-requests", icon: CheckSquare },
     { title: "Phân Ca", href: "/admin/shifts", icon: CalendarDays },
     { title: "Sự Cố", href: "/admin/incidents", icon: AlertTriangle },
+    { title: "Thiết Bị", href: "/admin/devices", icon: Cpu },
     { title: "System Logs", href: "/admin/logs", icon: FileText },
   ],
 };

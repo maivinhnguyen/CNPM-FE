@@ -166,3 +166,30 @@ export interface Incident {
   resolvedNote?: string;
 }
 
+// ── Device Management ──────────────────────────────────────────
+export type DeviceType = "camera" | "barrier" | "rfid_reader" | "sensor";
+export type DeviceStatus = "online" | "offline" | "warning" | "maintenance";
+
+export interface Device {
+  id: string;
+  name: string;
+  type: DeviceType;
+  locationLabel: string;
+  status: DeviceStatus;
+  ipAddress?: string;
+  lastSeen: string;
+  installedAt: string;
+  firmwareVersion?: string;
+  notes?: string;
+  alertCount: number;
+}
+
+export interface DeviceAlert {
+  id: string;
+  deviceId: string;
+  deviceName: string;
+  message: string;
+  severity: "low" | "medium" | "high";
+  createdAt: string;
+  resolvedAt?: string;
+}
