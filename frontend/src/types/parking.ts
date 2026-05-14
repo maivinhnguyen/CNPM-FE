@@ -193,3 +193,42 @@ export interface DeviceAlert {
   createdAt: string;
   resolvedAt?: string;
 }
+
+// ── Parking Lot (Nhà Xe) ───────────────────────────────────────
+export type ParkingLotStatus = "active" | "inactive" | "maintenance";
+export type ParkingLotType   = "indoor" | "outdoor" | "multi_level";
+
+export interface ParkingLot {
+  id: string;
+  name: string;
+  address: string;
+  type: ParkingLotType;
+  status: ParkingLotStatus;
+  totalCapacity: number;
+  currentOccupancy: number;
+  openTime: string;       // "06:00"
+  closeTime: string;      // "22:00"
+  contactPhone?: string;
+  managerName?: string;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ── Transaction (Giao dịch) ────────────────────────────────────
+export type TransactionType = "parking_fee" | "subscription" | "penalty";
+export type TransactionStatus = "success" | "pending" | "failed";
+export type PaymentMethod = "cash" | "bank_transfer" | "e_wallet" | "rfid_card";
+
+export interface Transaction {
+  id: string;
+  amount: number;
+  type: TransactionType;
+  status: TransactionStatus;
+  paymentMethod: PaymentMethod;
+  description: string;
+  vehiclePlate?: string;
+  userId?: string;
+  userName?: string;
+  createdAt: string;
+}

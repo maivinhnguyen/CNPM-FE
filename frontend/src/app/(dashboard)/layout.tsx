@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Navbar } from "@/components/layout/navbar";
+import { cn } from "@/lib/utils";
 
 export default function DashboardLayout({
   children,
@@ -34,11 +35,12 @@ export default function DashboardLayout({
       <div className="flex-1 flex flex-col min-w-0">
         {user.role !== "staff" && <Navbar />}
         <main
-          className={
+          className={cn(
+            "flex-1 overflow-auto dashboard-bg",
             user.role === "staff"
-              ? "flex-1 p-4 lg:p-6 overflow-hidden flex flex-col"
-              : "flex-1 p-4 lg:p-6 overflow-auto"
-          }
+              ? "p-4 lg:p-6 flex flex-col"
+              : "p-5 lg:p-7"
+          )}
         >
           {children}
         </main>
