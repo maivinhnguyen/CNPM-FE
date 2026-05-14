@@ -29,24 +29,24 @@ export default function AdminVehiclesPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Vehicle Management"
-        description="View all registered vehicles in the system"
+        title="Quản lý phương tiện"
+        description="Xem tất cả phương tiện đã đăng ký trong hệ thống"
       />
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">All Vehicles</CardTitle>
+          <CardTitle className="text-base">Tất cả phương tiện</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>License Plate</TableHead>
-                <TableHead>Brand / Model</TableHead>
-                <TableHead>Color</TableHead>
-                <TableHead>Owner</TableHead>
-                <TableHead>Registered</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Biển số xe</TableHead>
+                <TableHead>Hiệu / Dòng xe</TableHead>
+                <TableHead>Màu sắc</TableHead>
+                <TableHead>Chủ sở hữu</TableHead>
+                <TableHead>Ngày đăng ký</TableHead>
+                <TableHead>Trạng thái</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -70,7 +70,7 @@ export default function AdminVehiclesPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {format(new Date(v.registeredAt), "MMM d, yyyy")}
+                    {format(new Date(v.registeredAt), "dd/MM/yyyy")}
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -80,7 +80,7 @@ export default function AdminVehiclesPage() {
                           : "bg-slate-500/15 text-slate-700 dark:text-slate-400"
                       }
                     >
-                      {v.isActive ? "Active" : "Inactive"}
+                      {v.isActive ? "Hoạt động" : "Ngưng hoạt động"}
                     </Badge>
                   </TableCell>
                 </TableRow>

@@ -4,15 +4,15 @@ export const APP_DESCRIPTION = "Smart Motorbike Parking Management System";
 export const PARKING_CAPACITY = 500;
 
 export const ROLE_LABELS: Record<string, string> = {
-  student: "Student",
-  staff: "Parking Staff",
-  admin: "Administrator",
+  student: "Sinh viên",
+  staff: "Nhân viên",
+  admin: "Quản trị viên",
 };
 
 export const PARKING_STATUS_LABELS: Record<string, string> = {
-  ongoing: "Ongoing",
-  completed: "Completed",
-  not_parked: "Not Parked",
+  ongoing: "Đang gửi",
+  completed: "Đã hoàn thành",
+  not_parked: "Chưa gửi",
 };
 
 export const PARKING_STATUS_COLORS: Record<string, string> = {
