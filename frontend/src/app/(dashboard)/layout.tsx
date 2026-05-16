@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -14,14 +14,19 @@ export default function DashboardLayout({
 }) {
   const { isAuthenticated, user } = useAuthStore();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated || !user) {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted && (!isAuthenticated || !user)) {
       router.replace("/login");
     }
-  }, [isAuthenticated, user, router]);
+  }, [isMounted, isAuthenticated, user, router]);
 
-  if (!isAuthenticated || !user) {
+  if (!isMounted || !isAuthenticated || !user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-pulse text-muted-foreground">Loading...</div>
