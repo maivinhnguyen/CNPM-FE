@@ -1,7 +1,7 @@
 export type SessionStatus = "ongoing" | "completed";
 
 // ── Card Registration ────────────────────────────────────────
-export type CardRequestStatus = "pending" | "approved" | "rejected";
+export type CardRequestStatus = "pending" | "approved" | "rejected" | "blocked";
 
 export interface CardRequest {
   id: string;
@@ -230,5 +230,18 @@ export interface Transaction {
   vehiclePlate?: string;
   userId?: string;
   userName?: string;
+  createdAt: string;
+}
+
+// ── Notifications ──────────────────────────────────────────────
+export type NotificationType = "info" | "warning" | "success" | "error";
+
+export interface AppNotification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: NotificationType;
+  isRead: boolean;
   createdAt: string;
 }

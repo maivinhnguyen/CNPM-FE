@@ -88,4 +88,16 @@ export const cardService = {
     };
     return _cardRequests[idx];
   },
+
+  reportLostCard: async (id: string) => {
+    await delay();
+    const idx = _cardRequests.findIndex((r) => r.id === id);
+    if (idx === -1) throw new Error("Request not found");
+    _cardRequests[idx] = {
+      ..._cardRequests[idx],
+      status: "blocked",
+      note: "Thẻ đã báo mất khẩn cấp",
+    };
+    return _cardRequests[idx];
+  },
 };

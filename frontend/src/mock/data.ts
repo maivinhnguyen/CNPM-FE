@@ -11,6 +11,7 @@ import type {
   WalletTransaction,
   WorkShift,
   Incident,
+  AppNotification,
 } from "@/types";
 
 // ── Mock Users ──────────────────────────────────────────────
@@ -534,6 +535,37 @@ export const mockIncidents: Incident[] = [
     location: "Khu A - Ô số 7",
     status: "escalated",
     createdAt: new Date(Date.now() - 3600000).toISOString(),
+  },
+];
+
+// ── Mock Notifications ─────────────────────────────────────────
+export const mockNotifications: AppNotification[] = [
+  {
+    id: "n1",
+    userId: "u1",
+    title: "Thẻ xe đã được quẹt",
+    message: "Xe 59F1-12345 vừa vào bãi lúc 07:15",
+    type: "info",
+    isRead: false,
+    createdAt: new Date(Date.now() - 3600000).toISOString(),
+  },
+  {
+    id: "n2",
+    userId: "u1",
+    title: "Vé tháng sắp hết hạn",
+    message: "Vé tháng cho xe 59F1-12345 sẽ hết hạn sau 3 ngày nữa. Vui lòng gia hạn.",
+    type: "warning",
+    isRead: false,
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    id: "n3",
+    userId: "u1",
+    title: "Nạp tiền thành công",
+    message: "Bạn đã nạp thành công 200.000đ vào ví.",
+    type: "success",
+    isRead: true,
+    createdAt: new Date(Date.now() - 172800000).toISOString(),
   },
 ];
 

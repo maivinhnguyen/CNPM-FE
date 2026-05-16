@@ -37,8 +37,13 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import type { UserRole } from "@/types";
+import type { UserRole, AppNotification } from "@/types";
 import { useState } from "react";
+import { Bell, CheckCircle2, Info, AlertTriangle, XCircle, CheckCheck } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { notificationService } from "@/services/notification.service";
+import { formatDistanceToNow } from "date-fns";
+import { vi } from "date-fns/locale";
 
 interface MobileNavItem {
   title: string;
@@ -63,6 +68,93 @@ const navByRole: Record<UserRole, MobileNavItem[]> = {
     { title: "System Logs", href: "/admin/logs", icon: FileText },
   ],
 };
+
+function NotificationDropdown({ userId }: { userId: string }) {
+  const queryClient = useQueryClient();
+  const { data: notifications = [] } = useQuery({
+    queryKey: ["notifications", userId],
+    queryFn: () => notificationService.getMyNotifications(userId),
+    refetchInterval: 30000,
+  });
+
+  const markAsRead = useMutation({
+    mutationFn: (id: string) => notificationService.markAsRead(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications", userId] }),
+  });
+
+  const markAllAsRead = useMutation({
+    mutationFn: () => notificationService.markAllAsRead(userId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications", userId] }),
+  });
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  const getIcon = (type: AppNotification["type"]) => {
+    switch (type) {
+      case "info": return <Info className="h-4 w-4 text-blue-500" />;
+      case "success": return <CheckCircle2 className="h-4 w-4 text-emerald-500" />;
+      case "warning": return <AlertTriangle className="h-4 w-4 text-amber-500" />;
+      case "error": return <XCircle className="h-4 w-4 text-red-500" />;
+    }
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="relative h-9 w-9">
+          <Bell className="h-5 w-5" />
+          {unreadCount > 0 && (
+            <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[320px] p-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          <p className="text-sm font-semibold">Thông báo</p>
+          {unreadCount > 0 && (
+            <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-primary hover:bg-transparent hover:text-primary/80 flex items-center gap-1"
+              onClick={(e) => {
+                e.preventDefault();
+                markAllAsRead.mutate();
+              }}
+              disabled={markAllAsRead.isPending}>
+              <CheckCheck className="h-3 w-3" /> Đánh dấu đã đọc
+            </Button>
+          )}
+        </div>
+        <div className="max-h-[380px] overflow-y-auto">
+          {notifications.length === 0 ? (
+            <div className="p-6 text-center text-sm text-muted-foreground">Chưa có thông báo nào.</div>
+          ) : (
+            <div className="flex flex-col">
+              {notifications.map((n) => (
+                <button
+                  key={n.id}
+                  onClick={() => !n.isRead && markAsRead.mutate(n.id)}
+                  className={`flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50 border-b border-border last:border-0 ${
+                    !n.isRead ? "bg-primary/5" : ""
+                  }`}
+                >
+                  <div className="mt-0.5 shrink-0">{getIcon(n.type)}</div>
+                  <div className="flex-1 space-y-1">
+                    <p className={`text-sm ${!n.isRead ? "font-semibold" : "font-medium text-muted-foreground"}`}>{n.title}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-2">{n.message}</p>
+                    <p className="text-[10px] text-muted-foreground/70 font-medium">
+                      {formatDistanceToNow(new Date(n.createdAt), { addSuffix: true, locale: vi })}
+                    </p>
+                  </div>
+                  {!n.isRead && <div className="h-2 w-2 rounded-full bg-primary shrink-0 mt-1.5" />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function Navbar() {
   const user = useAuthStore((s) => s.user);
@@ -141,7 +233,8 @@ export function Navbar() {
       <div className="flex-1" />
 
       {/* Right section */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
+        {user && <NotificationDropdown userId={user.id} />}
         <ThemeToggle />
 
         <DropdownMenu>

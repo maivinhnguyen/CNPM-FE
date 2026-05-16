@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
 import {
   CreditCard, CheckCircle2, Clock, XCircle, ChevronRight,
-  Car, User, FileText, Send, Plus, Info, Sparkles,
+  Car, User, FileText, Send, Plus, Info, Sparkles, ShieldAlert
 } from "lucide-react";
 import { CARD_REQUEST_STATUS_LABELS, CARD_REQUEST_STATUS_COLORS } from "@/lib/constants";
 import { format } from "date-fns";
@@ -179,7 +179,7 @@ function RegistrationForm({
             </Label>
             <Input id="cccd" placeholder="12 chữ số" maxLength={12}
               value={form.idCardNumber}
-              onChange={(e) => set("idCardNumber", e.target.value.replace(/\D/g, ""))} />
+              onChange={(e) => set("idCardNumber", e.target.value)} />
             <p className="text-xs text-muted-foreground">Dùng để xác minh danh tính, không được chia sẻ cho bên thứ ba.</p>
           </div>
         </div>
@@ -241,6 +241,15 @@ export default function StudentCardPage() {
     onError: () => toast.error("Có lỗi xảy ra. Vui lòng thử lại."),
   });
 
+  const blockMutation = useMutation({
+    mutationFn: (id: string) => cardService.reportLostCard(id),
+    onSuccess: () => {
+      toast.success("Thẻ đã được khóa khẩn cấp thành công!");
+      queryClient.invalidateQueries({ queryKey: ["my-card-request"] });
+    },
+    onError: () => toast.error("Khóa thẻ thất bại. Vui lòng thử lại."),
+  });
+
   const handleSubmit = (formData: { vehiclePlate: string; vehicleBrand: string; vehicleModel: string; vehicleColor: string; idCardNumber: string; note: string }) => {
     submitMutation.mutate({
       userId: user!.id,
@@ -248,6 +257,12 @@ export default function StudentCardPage() {
       studentId: user!.studentId ?? "",
       ...formData,
     });
+  };
+
+  const handleBlockCard = () => {
+    if (window.confirm("CẢNH BÁO: Thẻ sẽ bị vô hiệu hóa lập tức ở cổng. Bạn sẽ cần làm thủ tục xin cấp thẻ mới. Bạn có chắc chắn muốn khóa thẻ không?")) {
+      blockMutation.mutate(cardRequest!.id);
+    }
   };
 
   if (reqLoading || vLoading) return <LoadingSkeleton type="page" />;
@@ -308,11 +323,19 @@ export default function StudentCardPage() {
 
             {/* Option to request card replacement */}
             {!showReplaceForm ? (
-              <Button variant="outline" size="sm" className="w-full gap-2 mt-1"
-                onClick={() => setShowReplaceForm(true)}>
-                <Plus className="h-4 w-4" />
-                Yêu cầu đổi thẻ / cập nhật phương tiện
-              </Button>
+              <div className="flex gap-2 mt-1">
+                <Button variant="outline" size="sm" className="flex-1 gap-2"
+                  onClick={() => setShowReplaceForm(true)}>
+                  <Plus className="h-4 w-4" />
+                  Yêu cầu đổi thẻ
+                </Button>
+                <Button variant="destructive" size="sm" className="gap-2"
+                  onClick={handleBlockCard}
+                  disabled={blockMutation.isPending}>
+                  <ShieldAlert className="h-4 w-4" />
+                  {blockMutation.isPending ? "Đang xử lý..." : "Báo mất thẻ"}
+                </Button>
+              </div>
             ) : (
               <div className="border-t border-border pt-4 space-y-3">
                 <p className="text-sm font-semibold flex items-center gap-2">
@@ -378,6 +401,41 @@ export default function StudentCardPage() {
           </CardHeader>
           <CardContent>
             <StatusTimeline request={cardRequest} />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── Case 3b: Blocked — show status + option to re-register ── */}
+      {cardRequest?.status === "blocked" && (
+        <Card className="border-red-500/30 bg-gradient-to-br from-red-500/10 to-red-500/5">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <ShieldAlert className="h-5 w-5 text-red-500" />
+              Thẻ đã bị khóa (Báo mất)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+              <div>
+                <p className="font-semibold text-red-600 dark:text-red-400">Thẻ của bạn đã bị vô hiệu hóa</p>
+                <p className="text-sm text-muted-foreground mt-0.5">Không ai có thể sử dụng thẻ này để ra vào bãi xe nữa. Bạn có thể đăng ký cấp thẻ mới.</p>
+              </div>
+            </div>
+            
+            <Button className="w-full gap-2" onClick={() => setShowRenewForm(true)}>
+              <Plus className="h-4 w-4" />
+              Đăng ký cấp thẻ mới
+            </Button>
+
+            {showRenewForm && (
+              <RegistrationForm
+                isRenew
+                vehicles={vehicles}
+                onSubmit={handleSubmit}
+                onCancel={() => setShowRenewForm(false)}
+                isPending={submitMutation.isPending}
+              />
+            )}
           </CardContent>
         </Card>
       )}
