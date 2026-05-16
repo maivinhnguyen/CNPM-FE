@@ -9,7 +9,7 @@ import { StatCard } from "@/components/shared/stat-card";
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Car, ParkingCircle, Clock, CheckCircle2 } from "lucide-react";
+import { Car, ParkingCircle, Clock, CheckCircle2, Activity } from "lucide-react";
 import { PARKING_STATUS_LABELS, PARKING_STATUS_COLORS } from "@/lib/constants";
 import { format } from "date-fns";
 
@@ -26,6 +26,12 @@ export default function StudentDashboardPage() {
     queryKey: ["my-parking", user?.id],
     queryFn: () => parkingService.getSessions(user?.id),
     enabled: !!user,
+  });
+
+  const { data: stats } = useQuery({
+    queryKey: ["parking-stats"],
+    queryFn: () => parkingService.getStats(),
+    refetchInterval: 30000,
   });
 
   const isLoading = vehiclesLoading || sessionsLoading;
@@ -47,6 +53,37 @@ export default function StudentDashboardPage() {
         title={`Welcome back, ${user?.name?.split(" ").pop()}`}
         description="Here's an overview of your parking activity"
       />
+
+      {/* Real-time Capacity */}
+      {stats && (
+        <Card className="overflow-hidden border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
+          <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row gap-4 items-center">
+            <div className="flex items-center gap-4 flex-1">
+              <div className="p-3 rounded-full bg-primary/10">
+                <Activity className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">Chỗ trống hiện tại</h3>
+                <p className="text-sm text-muted-foreground">Khu vực gửi xe máy</p>
+              </div>
+            </div>
+            <div className="flex-1 w-full space-y-2">
+              <div className="flex justify-between text-sm font-medium">
+                <span>{stats.totalCapacity - stats.currentOccupancy} chỗ trống</span>
+                <span className="text-muted-foreground">{stats.currentOccupancy}/{stats.totalCapacity} đã đầy</span>
+              </div>
+              <div className="h-3 w-full bg-secondary rounded-full overflow-hidden">
+                <div 
+                  className={`h-full rounded-full transition-all duration-1000 ${
+                    stats.occupancyRate > 90 ? 'bg-red-500' : stats.occupancyRate > 70 ? 'bg-amber-500' : 'bg-emerald-500'
+                  }`}
+                  style={{ width: `${stats.occupancyRate}%` }}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

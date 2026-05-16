@@ -12,6 +12,8 @@ import type {
   WorkShift,
   Incident,
   AppNotification,
+  SupportTicket,
+  VisitorPass,
 } from "@/types";
 
 // ── Mock Users ──────────────────────────────────────────────
@@ -567,6 +569,53 @@ export const mockNotifications: AppNotification[] = [
     isRead: true,
     createdAt: new Date(Date.now() - 172800000).toISOString(),
   },
+];
+
+// ── Mock Support Tickets ───────────────────────────────────────
+export const mockSupportTickets: SupportTicket[] = [
+  {
+    id: "st1",
+    userId: "u1",
+    userName: "Nguyen Van An",
+    category: "wallet_issue",
+    subject: "Nạp tiền bị lỗi trừ tiền nhưng chưa nhận được",
+    description: "Sáng nay em có nạp 200k qua Momo, ngân hàng đã trừ tiền nhưng số dư ví trên app chưa cập nhật.",
+    status: "in_progress",
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    updatedAt: new Date(Date.now() - 3600000).toISOString(),
+    responses: [
+      {
+        id: "r1",
+        senderId: "u1",
+        senderName: "Nguyen Van An",
+        message: "Cho em hỏi bao lâu thì cập nhật ạ?",
+        isAdmin: false,
+        createdAt: new Date(Date.now() - 80000000).toISOString(),
+      },
+      {
+        id: "r2",
+        senderId: "admin",
+        senderName: "BQL Bãi xe",
+        message: "Chào bạn, hệ thống Momo đang bảo trì, số dư sẽ được cộng vào ví của bạn trong vòng 24h tới nhé.",
+        isAdmin: true,
+        createdAt: new Date(Date.now() - 3600000).toISOString(),
+      }
+    ]
+  }
+];
+
+// ── Mock Visitor Passes ────────────────────────────────────────
+export const mockVisitorPasses: VisitorPass[] = [
+  {
+    id: "vp1",
+    userId: "u1",
+    visitorName: "Tran Thi B",
+    vehiclePlate: "59X1-99999",
+    validDate: new Date().toISOString().split('T')[0],
+    status: "valid",
+    qrCodeData: "VISITOR-59X1-99999-" + Date.now(),
+    createdAt: new Date(Date.now() - 3600000).toISOString(),
+  }
 ];
 
 // ── Helper: simulate network delay ─────────────────────────

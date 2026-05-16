@@ -12,12 +12,14 @@ import { AlertBanner } from "@/features/staff/alert-banner";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   LogIn,
   LogOut,
   Loader2,
   ParkingCircle,
   AlertTriangle,
+  UserPlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -42,6 +44,7 @@ export default function StaffCheckPage() {
   const [alertType, setAlertType] = useState<
     "unregistered" | "face_mismatch" | "plate_mismatch" | null
   >(null);
+  const [guestPlate, setGuestPlate] = useState("");
 
 
 
@@ -83,6 +86,33 @@ export default function StaffCheckPage() {
       setFlowState("idle");
     }
   }, []);
+
+  const handleGuestCheckIn = useCallback(() => {
+    if (!guestPlate) {
+      toast.error("Vui lòng nhập biển số xe khách");
+      return;
+    }
+    handleResetInternal();
+    
+    // Simulate lookup result for a guest
+    const guestResult: VehicleLookupResult = {
+      found: true,
+      currentStatus: "not_parked",
+      vehicle: {
+        id: "guest-" + Date.now(),
+        licensePlate: guestPlate.toUpperCase(),
+        brand: "Khách vãng lai",
+        model: "Khách vãng lai",
+        color: "Không xác định",
+        ownerName: "Khách Vãng Lai",
+        isRegistered: false,
+      }
+    };
+    
+    setResult(guestResult);
+    setFlowState("review_checkin");
+    setGuestPlate("");
+  }, [guestPlate]);
 
   // 51D3-11111 = v3 (Pham Duc Huy, Honda Vision) — not currently parked → triggers check-in flow
   const handleMockCheckInSwipe = () => handleLookup("51D3-11111");
@@ -244,17 +274,33 @@ export default function StaffCheckPage() {
                 className="animate-in fade-in slide-in-from-right-4 duration-300"
               />
             ) : (
-              <div className="h-full flex items-center justify-center border-2 border-dashed border-border rounded-xl bg-muted/20 text-center p-6">
+              <div className="h-full flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl bg-muted/20 text-center p-6 gap-6">
                 <div className="space-y-2">
                   <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mx-auto opacity-50">
                     <LogIn className="h-6 w-6 text-muted-foreground" />
                   </div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
-                    No Active Session
+                    Chờ quẹt thẻ
                   </p>
                   <p className="text-xs text-muted-foreground/60 leading-relaxed max-w-[180px] mx-auto">
-                    Swipe a card to view vehicle and student information
+                    Hệ thống sẽ tự động nhận diện và hiển thị thông tin
                   </p>
+                </div>
+                
+                <div className="w-full border-t border-border pt-4 space-y-3">
+                  <p className="text-xs font-semibold uppercase text-muted-foreground tracking-wider flex items-center gap-2 justify-center">
+                    <UserPlus className="h-4 w-4" /> Khách Vãng Lai
+                  </p>
+                  <Input 
+                    placeholder="Nhập biển số xe khách..." 
+                    className="text-center font-medium bg-background"
+                    value={guestPlate}
+                    onChange={(e) => setGuestPlate(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleGuestCheckIn()}
+                  />
+                  <Button className="w-full gap-2" variant="secondary" onClick={handleGuestCheckIn}>
+                    Cấp Thẻ Khách
+                  </Button>
                 </div>
               </div>
             )}

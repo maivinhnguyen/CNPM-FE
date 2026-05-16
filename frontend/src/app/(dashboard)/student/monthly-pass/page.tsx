@@ -9,6 +9,8 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
 import {
   CalendarCheck, Clock, CheckCircle2, PlusCircle,
@@ -36,6 +38,16 @@ function CountdownBadge({ endDate }: { endDate: string }) {
 }
 
 function ActivePassCard({ pass }: { pass: MonthlyPass }) {
+  const queryClient = useQueryClient();
+  const toggleMutation = useMutation({
+    mutationFn: () => walletService.toggleAutoRenew(pass.id),
+    onSuccess: () => {
+      toast.success(pass.isAutoRenew ? "Đã tắt tự động gia hạn" : "Đã bật tự động gia hạn");
+      queryClient.invalidateQueries({ queryKey: ["my-passes"] });
+    },
+    onError: () => toast.error("Có lỗi xảy ra. Vui lòng thử lại."),
+  });
+
   const daysLeft = differenceInDays(parseISO(pass.endDate), new Date());
   const daysTotal = differenceInDays(parseISO(pass.endDate), parseISO(pass.startDate));
   const progress = Math.max(0, Math.round((daysLeft / daysTotal) * 100));
@@ -75,6 +87,18 @@ function ActivePassCard({ pass }: { pass: MonthlyPass }) {
             Vé sắp hết hạn! Hãy gia hạn để không bị gián đoạn.
           </div>
         )}
+
+        <div className="pt-4 border-t border-emerald-500/10 flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label className="text-sm font-semibold">Tự động gia hạn</Label>
+            <p className="text-xs text-muted-foreground">Trừ tiền ví vào ngày 01 hàng tháng</p>
+          </div>
+          <Switch 
+            checked={!!pass.isAutoRenew} 
+            onCheckedChange={() => toggleMutation.mutate()}
+            disabled={toggleMutation.isPending}
+          />
+        </div>
       </CardContent>
     </Card>
   );

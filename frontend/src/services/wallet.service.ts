@@ -121,4 +121,16 @@ export const walletService = {
 
     return newPass;
   },
+
+  // Toggle auto-renew for a pass
+  toggleAutoRenew: async (passId: string): Promise<MonthlyPass> => {
+    await delay(300);
+    const idx = _monthlyPasses.findIndex(p => p.id === passId);
+    if (idx === -1) throw new Error("Vé không tồn tại");
+    _monthlyPasses[idx] = {
+      ..._monthlyPasses[idx],
+      isAutoRenew: !_monthlyPasses[idx].isAutoRenew
+    };
+    return _monthlyPasses[idx];
+  },
 };

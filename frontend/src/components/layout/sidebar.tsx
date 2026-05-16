@@ -28,6 +28,8 @@ import {
   Cpu,
   Building2,
   Receipt,
+  LifeBuoy,
+  UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -64,6 +66,8 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { title: "Đăng Ký Thẻ", href: "/student/card", icon: CreditCard },
     { title: "Vé Xe Tháng", href: "/student/monthly-pass", icon: CalendarCheck },
     { title: "Ví Tiền", href: "/student/wallet", icon: Wallet },
+    { title: "Đăng Ký Khách", href: "/student/visitor", icon: UserPlus },
+    { title: "Hỗ Trợ", href: "/student/support", icon: LifeBuoy },
   ],
   staff: [
     { title: "Vào/Ra", href: "/staff", icon: ScanLine },

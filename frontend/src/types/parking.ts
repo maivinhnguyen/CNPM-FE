@@ -37,6 +37,7 @@ export interface MonthlyPass {
   price: number;
   status: MonthlyPassStatus;
   purchasedAt: string;
+  isAutoRenew?: boolean;
 }
 
 // ── Wallet ───────────────────────────────────────────────────
@@ -244,4 +245,44 @@ export interface AppNotification {
   type: NotificationType;
   isRead: boolean;
   createdAt: string;
+}
+
+// ── Support Ticketing ──────────────────────────────────────────
+export type TicketStatus = "open" | "in_progress" | "resolved" | "closed";
+export type TicketCategory = "wallet_issue" | "card_issue" | "staff_attitude" | "other";
+
+export interface SupportTicket {
+  id: string;
+  userId: string;
+  userName: string;
+  category: TicketCategory;
+  subject: string;
+  description: string;
+  status: TicketStatus;
+  createdAt: string;
+  updatedAt: string;
+  responses?: {
+    id: string;
+    senderId: string;
+    senderName: string;
+    message: string;
+    isAdmin: boolean;
+    createdAt: string;
+  }[];
+}
+
+// ── Visitor Pre-registration ───────────────────────────────────
+export type VisitorPassStatus = "valid" | "used" | "expired" | "cancelled";
+
+export interface VisitorPass {
+  id: string;
+  userId: string;       // the student who registered it
+  visitorName: string;
+  visitorPhone?: string;
+  vehiclePlate: string;
+  validDate: string;    // YYYY-MM-DD
+  status: VisitorPassStatus;
+  qrCodeData: string;   // random string or token
+  createdAt: string;
+  usedAt?: string;
 }

@@ -15,8 +15,9 @@ import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
 import {
   Wallet, ArrowUpCircle, ArrowDownCircle, QrCode,
   Banknote, Smartphone, TrendingUp, History, ChevronRight,
-  Copy, CheckCheck, X, Info,
+  Copy, CheckCheck, X, Info, BarChart
 } from "lucide-react";
+import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import {
   TOPUP_PRESETS,
   TRANSACTION_TYPE_LABELS,
@@ -197,6 +198,22 @@ export default function WalletPage() {
     }
   };
 
+  // Prepare chart data
+  const chartData = [...txs]
+    .filter(t => t.amount < 0) // only spending
+    .reduce((acc: any, t) => {
+      const month = format(new Date(t.createdAt), "MM/yyyy");
+      const existing = acc.find((a: any) => a.month === month);
+      if (existing) {
+        existing.spending += Math.abs(t.amount);
+      } else {
+        acc.push({ month, spending: Math.abs(t.amount) });
+      }
+      return acc;
+    }, [])
+    .reverse()
+    .slice(0, 4); // last 4 months
+
   return (
     <div className="space-y-6 max-w-2xl">
       <PageHeader title="Ví Tiền" description="Quản lý số dư và nạp tiền tài khoản" />
@@ -346,6 +363,32 @@ export default function WalletPage() {
           }
         </CardContent>
       </Card>
+
+      {/* Spending Chart */}
+      {chartData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <BarChart className="h-4 w-4" />
+              Thống kê chi tiêu
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-48 w-full mt-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsBarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                  <Tooltip 
+                    formatter={(value: number) => [`${value.toLocaleString("vi-VN")}đ`, "Đã tiêu"]}
+                    cursor={{ fill: 'hsl(var(--muted))' }}
+                  />
+                  <Bar dataKey="spending" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                </RechartsBarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Info */}
       <Card className="bg-muted/30 border-dashed">
