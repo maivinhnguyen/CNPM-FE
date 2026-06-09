@@ -62,16 +62,15 @@ export default function RegisterPage() {
   const onSubmit = async (values: RegisterValues) => {
     setIsLoading(true);
     try {
-      const res = await authService.register({
+      await authService.register({
         name: values.name,
         email: values.email,
         password: values.password,
         role: values.role as UserRole,
         studentId: values.studentId,
       });
-      setAuth(res.user, res.token);
-      toast.success("Tạo tài khoản thành công!");
-      router.push(`/${res.user.role}`);
+      toast.success("Đăng ký thành công! Vui lòng chờ admin phê duyệt tài khoản.");
+      router.push("/login");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Đăng ký thất bại");
     } finally {

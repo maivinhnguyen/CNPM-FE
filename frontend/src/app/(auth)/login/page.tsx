@@ -48,7 +48,8 @@ export default function LoginPage() {
       const res = await authService.login(values);
       setAuth(res.user, res.token);
       toast.success(`Chào mừng, ${res.user.name}!`);
-      router.push(`/${res.user.role}`);
+      const targetRole = res.user.role === "faculty" ? "admin" : res.user.role;
+      router.push(`/${targetRole}`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Đăng nhập thất bại");
     } finally {
