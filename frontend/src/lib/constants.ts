@@ -7,6 +7,7 @@ export const ROLE_LABELS: Record<string, string> = {
   student: "Sinh viên",
   staff: "Nhân viên",
   admin: "Quản trị viên",
+  faculty: "Giảng viên",
 };
 
 export const PARKING_STATUS_LABELS: Record<string, string> = {

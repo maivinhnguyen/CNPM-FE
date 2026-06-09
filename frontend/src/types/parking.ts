@@ -22,6 +22,15 @@ export interface CardRequest {
   reviewedBy?: string;
 }
 
+export interface Card {
+  cardUid: string;
+  cardType: string;
+  memberId?: string;
+  isInside: boolean;
+  status: string;
+  balance: number;
+}
+
 // ── Monthly Pass ─────────────────────────────────────────────
 export type MonthlyPassStatus = "active" | "expired" | "pending";
 
@@ -41,16 +50,16 @@ export interface MonthlyPass {
 }
 
 // ── Wallet ───────────────────────────────────────────────────
-export type TransactionType = "topup" | "payment" | "refund";
-export type PaymentMethod = "bank_qr" | "cash" | "momo";
+export type WalletTransactionType = "topup" | "payment" | "refund";
+export type WalletPaymentMethod = "bank_qr" | "cash" | "momo";
 
 export interface WalletTransaction {
   id: string;
   userId: string;
-  type: TransactionType;
+  type: WalletTransactionType;
   amount: number;           // positive = credit, negative = debit
   description: string;
-  method?: PaymentMethod;
+  method?: WalletPaymentMethod;
   status: "completed" | "pending" | "failed";
   createdAt: string;
 }
@@ -97,6 +106,7 @@ export interface DailyData {
 
 export interface VehicleLookupResult {
   found: boolean;
+  cardUid?: string;
   vehicle?: {
     id: string;
     licensePlate: string;

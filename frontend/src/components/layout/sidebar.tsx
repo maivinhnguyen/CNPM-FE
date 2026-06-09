@@ -98,7 +98,7 @@ export function Sidebar() {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
 
-  const role = user?.role ?? "student";
+  const role = user?.role === "faculty" ? "admin" : (user?.role ?? "student");
   const initials = user?.name
     ?.split(" ")
     .map((n) => n[0])

@@ -100,15 +100,17 @@ function NotificationDropdown({ userId }: { userId: string }) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative h-9 w-9">
-          <Bell className="h-5 w-5" />
-          {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
-              {unreadCount > 9 ? "9+" : unreadCount}
-            </span>
-          )}
-        </Button>
+      <DropdownMenuTrigger
+        render={
+          <Button variant="ghost" size="icon" className="relative h-9 w-9" />
+        }
+      >
+        <Bell className="h-5 w-5" />
+        {unreadCount > 0 && (
+          <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[320px] p-0">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
@@ -163,8 +165,8 @@ export function Navbar() {
   const pathname = usePathname();
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const role = user?.role ?? "student";
-  const items = navByRole[role];
+  const role: UserRole = user?.role === "faculty" ? "admin" : (user?.role ?? "student");
+  const items = navByRole[role] ?? [];
   const initials = user?.name
     ?.split(" ")
     .map((n) => n[0])

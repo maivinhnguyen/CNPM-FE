@@ -137,8 +137,9 @@ export default function StaffCheckPage() {
     const plateBlob = await captureBlob(rearCamera.videoRef);
 
     try {
+      const cardUid = result.cardUid || "CARD-MOCK";
       await parkingService.checkIn(
-        "CARD-MOCK",
+        cardUid,
         plateBlob ?? new Blob(),
         riderBlob ?? new Blob(),
       );

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { incidentService } from "@/services/incident.service";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,8 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
 import {
-  Search, Car, User, CreditCard, History,
-  CheckCircle2, XCircle, Clock, ChevronRight,
+  Search, Car, User, CreditCard,
+  CheckCircle2, XCircle, ChevronRight,
 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -162,12 +163,13 @@ export default function VehicleLookupPage() {
 
           {/* Actions */}
           <div className="flex gap-3">
-            <Button variant="outline" className="flex-1 gap-2 text-sm" asChild>
-              <a href="/staff/incidents">
-                <ChevronRight className="h-4 w-4" />
-                Báo cáo sự cố với xe này
-              </a>
-            </Button>
+            <Link
+              href="/staff/incidents"
+              className="flex-1 inline-flex items-center justify-center gap-2 text-sm h-10 px-4 py-2 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors font-medium"
+            >
+              <ChevronRight className="h-4 w-4" />
+              Báo cáo sự cố với xe này
+            </Link>
           </div>
         </div>
       )}
