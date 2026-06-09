@@ -26,10 +26,10 @@ import {
 import { format } from "date-fns";
 import { toast } from "sonner";
 import Image from "next/image";
-import type { PaymentMethod, WalletTransaction } from "@/types";
+import type { WalletPaymentMethod, WalletTransaction } from "@/types";
 
 const paymentMethods: {
-  id: PaymentMethod;
+  id: WalletPaymentMethod;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   desc: string;
@@ -162,7 +162,7 @@ export default function WalletPage() {
   const [showTopup, setShowTopup] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [amount, setAmount] = useState<number>(0);
-  const [method, setMethod] = useState<PaymentMethod>("bank_qr");
+  const [method, setMethod] = useState<WalletPaymentMethod>("bank_qr");
 
   const { data: wallet, isLoading } = useQuery({
     queryKey: ["wallet", user?.id],
@@ -378,9 +378,9 @@ export default function WalletPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsBarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                   <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
-                  <Tooltip 
-                    formatter={(value: number) => [`${value.toLocaleString("vi-VN")}đ`, "Đã tiêu"]}
-                    cursor={{ fill: 'hsl(var(--muted))' }}
+                  <Tooltip
+                    formatter={(value) => [`${Number(value ?? 0).toLocaleString("vi-VN")}đ`, "Đã tiêu"]}
+                    cursor={{ fill: "hsl(var(--muted))" }}
                   />
                   <Bar dataKey="spending" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                 </RechartsBarChart>
