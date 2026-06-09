@@ -3,11 +3,12 @@ import { ENDPOINTS } from "@/lib/endpoints";
 import type { WorkShift, ShiftStatus } from "@/types";
 
 export const shiftService = {
-  // Get all shifts, optionally filtered by date range
-  getShifts: async (fromDate?: string, toDate?: string): Promise<WorkShift[]> => {
+  // Get all shifts, optionally filtered by date range and/or staff
+  getShifts: async (fromDate?: string, toDate?: string, staffId?: string): Promise<WorkShift[]> => {
     const params = {
       ...(fromDate && { from: fromDate }),
       ...(toDate && { to: toDate }),
+      ...(staffId && { staffId }),
     };
     const res = await apiClient.get<WorkShift[] | null>(ENDPOINTS.SHIFTS.LIST, { params });
     return res ?? [];
@@ -82,12 +83,10 @@ export const shiftService = {
     return shiftService.updateStatus(shiftId, "completed");
   },
 
-  // Get shift history for a specific staff
+  // Get shift history for a specific staff (server-side filtered)
   getStaffShiftHistory: async (staffId: string): Promise<WorkShift[]> => {
-    const shifts = await shiftService.getShifts();
-    return shifts
-      .filter((s) => s.staffIds.includes(staffId))
-      .sort((a, b) => `${b.date}${b.startTime}`.localeCompare(`${a.date}${a.startTime}`));
+    const shifts = await shiftService.getShifts(undefined, undefined, staffId);
+    return shifts.sort((a, b) => `${b.date}${b.startTime}`.localeCompare(`${a.date}${a.startTime}`));
   },
 };
 

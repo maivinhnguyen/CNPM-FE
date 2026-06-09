@@ -162,7 +162,7 @@ function ActiveShiftPanel({ shift, onEnd }: { shift: WorkShift; onEnd: () => voi
 }
 
 // ── Upcoming Shift Card ────────────────────────────────────────
-function UpcomingShiftCard({ shift, onStart }: { shift: WorkShift; onStart: (id: string) => void; isStarting: boolean }) {
+function UpcomingShiftCard({ shift, onStart, isStarting }: { shift: WorkShift; onStart: (id: string) => void; isStarting: boolean }) {
   const [showNote, setShowNote] = useState(false);
   const Icon = SHIFT_ICONS[shift.type];
   const isNow = isToday(parseISO(shift.date));
@@ -197,8 +197,9 @@ function UpcomingShiftCard({ shift, onStart }: { shift: WorkShift; onStart: (id:
           <Button
             className="w-full gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
             onClick={() => onStart(shift.id)}
+            disabled={isStarting}
           >
-            <PlayCircle className="h-4 w-4" />
+            {isStarting ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlayCircle className="h-4 w-4" />}
             Bắt đầu ca ngay
           </Button>
         )}
