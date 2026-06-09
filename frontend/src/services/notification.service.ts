@@ -1,30 +1,18 @@
-import { mockNotifications, delay } from "@/mock/data";
+import { apiClient } from "@/lib/api-client";
+import { ENDPOINTS } from "@/lib/endpoints";
 import type { AppNotification } from "@/types";
 
-class NotificationService {
-  private notifications: AppNotification[] = [...mockNotifications];
+export const notificationService = {
+  getMyNotifications: async (userId: string): Promise<AppNotification[]> => {
+    const res = await apiClient.get<AppNotification[] | null>(ENDPOINTS.NOTIFICATIONS.LIST);
+    return res ?? [];
+  },
 
-  async getMyNotifications(userId: string): Promise<AppNotification[]> {
-    await delay(300);
-    return this.notifications
-      .filter((n) => n.userId === userId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }
+  markAsRead: async (id: string): Promise<void> => {
+    return apiClient.post(ENDPOINTS.NOTIFICATIONS.MARK_READ(id));
+  },
 
-  async markAsRead(id: string): Promise<void> {
-    await delay(200);
-    const index = this.notifications.findIndex((n) => n.id === id);
-    if (index !== -1) {
-      this.notifications[index].isRead = true;
-    }
-  }
-
-  async markAllAsRead(userId: string): Promise<void> {
-    await delay(300);
-    this.notifications = this.notifications.map((n) =>
-      n.userId === userId ? { ...n, isRead: true } : n
-    );
-  }
-}
-
-export const notificationService = new NotificationService();
+  markAllAsRead: async (userId: string): Promise<void> => {
+    return apiClient.post(ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ);
+  },
+};

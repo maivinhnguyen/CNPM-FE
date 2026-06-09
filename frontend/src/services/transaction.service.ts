@@ -1,88 +1,93 @@
-import type { Transaction } from "@/types";
-import { delay } from "@/mock/data";
+import { apiClient } from "@/lib/api-client";
+import { ENDPOINTS } from "@/lib/endpoints";
+import { cardService } from "@/services/card.service";
+import type { Transaction, Member } from "@/types";
 
-let _transactions: Transaction[] = [
-  {
-    id: "tx1",
-    amount: 5000,
-    type: "parking_fee",
-    status: "success",
-    paymentMethod: "rfid_card",
-    description: "Phí gửi xe theo lượt (xe máy)",
-    vehiclePlate: "59F1-12345",
-    userName: "Nguyễn Văn A",
-    createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(), // 15 mins ago
-  },
-  {
-    id: "tx2",
-    amount: 150000,
-    type: "subscription",
-    status: "success",
-    paymentMethod: "bank_transfer",
-    description: "Đăng ký vé tháng (Tháng 6/2026)",
-    vehiclePlate: "51D3-11111",
-    userName: "Trần Thị B",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-  },
-  {
-    id: "tx3",
-    amount: 5000,
-    type: "parking_fee",
-    status: "failed",
-    paymentMethod: "e_wallet",
-    description: "Phí gửi xe theo lượt (xe máy)",
-    vehiclePlate: "59E1-22222",
-    userName: "Lê Văn C",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(), // 5 hours ago
-  },
-  {
-    id: "tx4",
-    amount: 50000,
-    type: "penalty",
-    status: "pending",
-    paymentMethod: "cash",
-    description: "Phí phạt làm mất thẻ giữ xe",
-    userName: "Phạm Thị D",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-  },
-  {
-    id: "tx5",
-    amount: 300000,
-    type: "subscription",
-    status: "success",
-    paymentMethod: "e_wallet",
-    description: "Gia hạn vé tháng (Tháng 6, 7/2026)",
-    vehiclePlate: "59F1-12345",
-    userName: "Nguyễn Văn A",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
-  },
-];
+interface BackendTransaction {
+  id: string;
+  cardUid: string;
+  amount: number;
+  type: "deposit" | "parking_fee";
+  paymentMethod?: string;
+  sessionId?: number;
+  createdAt: string;
+}
 
 export const transactionService = {
   getAll: async (): Promise<Transaction[]> => {
-    await delay(400);
-    return [..._transactions].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    try {
+      const members = await apiClient.get<Member[] | null>(ENDPOINTS.MEMBERS.LIST);
+      const allTransactions: Transaction[] = [];
+
+      await Promise.all(
+        (members ?? []).map(async (m) => {
+          try {
+            const cards = await cardService.getCardsByMember(m.id);
+            for (const card of cards) {
+              try {
+                const txs = await apiClient.get<BackendTransaction[] | null>(
+                  ENDPOINTS.PAYMENT.TRANSACTIONS(card.cardUid)
+                );
+                (txs ?? []).forEach((t) => {
+                  allTransactions.push({
+                    id: t.id,
+                    amount: t.amount,
+                    type: t.type === "deposit" ? "subscription" : "parking_fee", // Map deposit to subscription/topup for UI compatibility
+                    status: "success",
+                    paymentMethod: (t.paymentMethod as any) || "rfid_card",
+                    description: t.type === "deposit" 
+                      ? `Nạp tiền vào thẻ ${t.cardUid}` 
+                      : `Phí gửi xe theo lượt (Thẻ ${t.cardUid})`,
+                    userName: m.fullName,
+                    createdAt: t.createdAt,
+                  });
+                });
+              } catch (e) {
+                // ignore
+              }
+            }
+          } catch (e) {
+            // ignore
+          }
+        })
+      );
+
+      return allTransactions.sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    } catch (e) {
+      console.error("Failed to fetch all transactions:", e);
+      return [];
+    }
   },
 
   getSummary: async () => {
-    await delay(200);
-    const successTxs = _transactions.filter((t) => t.status === "success");
-    const totalRevenue = successTxs.reduce((sum, t) => sum + t.amount, 0);
-    const parkingFees = successTxs
-      .filter((t) => t.type === "parking_fee")
-      .reduce((sum, t) => sum + t.amount, 0);
-    const subscriptionFees = successTxs
-      .filter((t) => t.type === "subscription")
-      .reduce((sum, t) => sum + t.amount, 0);
+    try {
+      const txs = await transactionService.getAll();
+      const successTxs = txs.filter((t) => t.status === "success");
+      const totalRevenue = successTxs.reduce((sum, t) => sum + t.amount, 0);
+      const parkingFees = successTxs
+        .filter((t) => t.type === "parking_fee")
+        .reduce((sum, t) => sum + t.amount, 0);
+      const subscriptionFees = successTxs
+        .filter((t) => t.type === "subscription")
+        .reduce((sum, t) => sum + t.amount, 0);
 
-    return {
-      totalRevenue,
-      parkingFees,
-      subscriptionFees,
-      totalTransactions: _transactions.length,
-      successCount: successTxs.length,
-    };
+      return {
+        totalRevenue,
+        parkingFees,
+        subscriptionFees,
+        totalTransactions: txs.length,
+        successCount: successTxs.length,
+      };
+    } catch (e) {
+      return {
+        totalRevenue: 0,
+        parkingFees: 0,
+        subscriptionFees: 0,
+        totalTransactions: 0,
+        successCount: 0,
+      };
+    }
   },
 };

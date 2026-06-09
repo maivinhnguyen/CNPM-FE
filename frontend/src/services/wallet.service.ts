@@ -1,60 +1,102 @@
-import type { Wallet, MonthlyPass, WalletTransaction, PaymentMethod } from "@/types";
-import { mockWallets, mockMonthlyPasses, delay } from "@/mock/data";
+import { apiClient } from "@/lib/api-client";
+import { ENDPOINTS } from "@/lib/endpoints";
+import { useAuthStore } from "@/stores/auth-store";
+import { cardService } from "@/services/card.service";
+import type { Wallet, MonthlyPass, WalletTransaction, WalletPaymentMethod } from "@/types";
+import { mockMonthlyPasses, mockWallets, delay } from "@/mock/data";
 
-// In-memory stores for optimistic updates
+interface BackendTransaction {
+  id: string;
+  cardUid: string;
+  amount: number;
+  type: "deposit" | "parking_fee";
+  paymentMethod?: string;
+  sessionId?: number;
+  createdAt: string;
+}
+
+let _monthlyPasses: MonthlyPass[] = [...mockMonthlyPasses];
 let _wallets: Wallet[] = mockWallets.map((w) => ({
   ...w,
   transactions: [...w.transactions],
 }));
-let _monthlyPasses: MonthlyPass[] = [...mockMonthlyPasses];
 
 export const walletService = {
   // Get wallet for user
   getWallet: async (userId: string): Promise<Wallet> => {
-    await delay(400);
-    const wallet = _wallets.find((w) => w.userId === userId);
-    if (!wallet) {
-      // Auto-create empty wallet
-      const newWallet: Wallet = { userId, balance: 0, transactions: [] };
-      _wallets.push(newWallet);
-      return newWallet;
+    const user = useAuthStore.getState().user;
+    if (!user || !user.memberId) {
+      return { userId, balance: 0, transactions: [] };
     }
-    return { ...wallet, transactions: [...wallet.transactions] };
+
+    try {
+      const cards = await cardService.getCardsByMember(user.memberId);
+      let totalBalance = 0;
+      const allTx: WalletTransaction[] = [];
+
+      for (const card of cards) {
+        totalBalance += card.balance;
+        try {
+          const txs = await apiClient.get<BackendTransaction[]>(
+            ENDPOINTS.PAYMENT.TRANSACTIONS(card.cardUid)
+          );
+          txs.forEach((t) => {
+            allTx.push({
+              id: t.id,
+              userId,
+              type: t.type === "deposit" ? "topup" : "payment",
+              amount: t.type === "deposit" ? t.amount : -t.amount,
+              description: t.type === "deposit" 
+                ? `Nạp tiền vào thẻ ${t.cardUid}` 
+                : `Thanh toán phí gửi xe (Thẻ ${t.cardUid})`,
+              method: (t.paymentMethod as any) || "bank_qr",
+              status: "completed",
+              createdAt: t.createdAt,
+            });
+          });
+        } catch (e) {
+          console.error(`Failed to get transactions for card ${card.cardUid}:`, e);
+        }
+      }
+
+      // Sort transactions by date descending
+      allTx.sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      return {
+        userId,
+        balance: totalBalance,
+        transactions: allTx,
+      };
+    } catch (e) {
+      console.error("Failed to fetch wallet:", e);
+      return { userId, balance: 0, transactions: [] };
+    }
   },
 
   // Top up wallet
   topUp: async (
     userId: string,
     amount: number,
-    method: PaymentMethod
+    method: WalletPaymentMethod
   ): Promise<Wallet> => {
-    await delay(700);
-    const idx = _wallets.findIndex((w) => w.userId === userId);
-    const methodLabels: Record<PaymentMethod, string> = {
-      bank_qr: "QR Ngân hàng",
-      cash: "Tiền mặt tại quầy",
-      momo: "MoMo",
-    };
-    const tx: WalletTransaction = {
-      id: `tx${Date.now()}`,
-      userId,
-      type: "topup",
-      amount,
-      description: `Nạp tiền qua ${methodLabels[method]}`,
-      method,
-      status: "completed",
-      createdAt: new Date().toISOString(),
-    };
-    if (idx === -1) {
-      _wallets.push({ userId, balance: amount, transactions: [tx] });
-    } else {
-      _wallets[idx] = {
-        ..._wallets[idx],
-        balance: _wallets[idx].balance + amount,
-        transactions: [tx, ..._wallets[idx].transactions],
-      };
+    const user = useAuthStore.getState().user;
+    if (!user || !user.memberId) {
+      throw new Error("Tài khoản chưa liên kết thông tin thành viên.");
     }
-    return _wallets[idx === -1 ? _wallets.length - 1 : idx];
+
+    const cards = await cardService.getCardsByMember(user.memberId);
+    if (!cards || cards.length === 0) {
+      throw new Error("Không tìm thấy thẻ RFID nào hoạt động để nạp tiền.");
+    }
+
+    const cardToDeposit = cards[0];
+    await apiClient.post(ENDPOINTS.PAYMENT.DEPOSIT(cardToDeposit.cardUid), {
+      amount,
+    });
+
+    return walletService.getWallet(userId);
   },
 
   // Get monthly passes for user

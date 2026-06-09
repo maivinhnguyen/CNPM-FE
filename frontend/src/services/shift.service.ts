@@ -1,132 +1,91 @@
+import { apiClient } from "@/lib/api-client";
+import { ENDPOINTS } from "@/lib/endpoints";
 import type { WorkShift, ShiftStatus } from "@/types";
-import { mockWorkShifts, mockUsers, delay } from "@/mock/data";
-
-let _shifts: WorkShift[] = [...mockWorkShifts];
 
 export const shiftService = {
   // Get all shifts, optionally filtered by date range
   getShifts: async (fromDate?: string, toDate?: string): Promise<WorkShift[]> => {
-    await delay(400);
-    let result = [..._shifts];
-    if (fromDate) result = result.filter((s) => s.date >= fromDate);
-    if (toDate)   result = result.filter((s) => s.date <= toDate);
-    return result.sort((a, b) => `${a.date}${a.startTime}`.localeCompare(`${b.date}${b.startTime}`));
+    const params = {
+      ...(fromDate && { from: fromDate }),
+      ...(toDate && { to: toDate }),
+    };
+    const res = await apiClient.get<WorkShift[] | null>(ENDPOINTS.SHIFTS.LIST, { params });
+    return res ?? [];
   },
 
   // Get shifts for a specific date
   getShiftsByDate: async (date: string): Promise<WorkShift[]> => {
-    await delay(300);
-    return _shifts.filter((s) => s.date === date)
-      .sort((a, b) => a.startTime.localeCompare(b.startTime));
+    return shiftService.getShifts(date, date);
   },
 
   // Get all staff users
   getStaffList: async () => {
-    await delay(200);
-    return mockUsers.filter((u) => u.role === "staff");
+    const users = await apiClient.get<any[] | null>(ENDPOINTS.USERS.LIST);
+    return (users ?? [])
+      .filter((u) => u.role === "staff")
+      .map((u) => ({
+        id: u.id,
+        email: u.email,
+        name: u.email.split("@")[0],
+        role: u.role,
+        createdAt: u.createdAt,
+      }));
   },
 
   // Create a new shift
   createShift: async (data: Omit<WorkShift, "id" | "status" | "staffIds" | "staffNames">): Promise<WorkShift> => {
-    await delay(500);
-    const newShift: WorkShift = {
-      ...data,
-      id: `sh${Date.now()}`,
-      staffIds: [],
-      staffNames: [],
-      status: "scheduled",
-    };
-    _shifts = [newShift, ..._shifts];
-    return newShift;
+    return apiClient.post<WorkShift>(ENDPOINTS.SHIFTS.CREATE, {
+      name: data.name,
+      type: data.type,
+      startTime: data.startTime,
+      endTime: data.endTime,
+      date: data.date,
+      notes: data.notes || null,
+    });
   },
 
   // Assign staff to a shift
   assignStaff: async (shiftId: string, staffId: string, assignedBy: string): Promise<WorkShift> => {
-    await delay(400);
-    const staffUser = mockUsers.find((u) => u.id === staffId);
-    if (!staffUser) throw new Error("Không tìm thấy nhân viên");
-
-    const idx = _shifts.findIndex((s) => s.id === shiftId);
-    if (idx === -1) throw new Error("Không tìm thấy ca làm");
-
-    const shift = _shifts[idx];
-    if (shift.staffIds.includes(staffId)) throw new Error("Nhân viên đã được phân vào ca này");
-
-    _shifts[idx] = {
-      ...shift,
-      staffIds: [...shift.staffIds, staffId],
-      staffNames: [...shift.staffNames, staffUser.name],
-    };
-    return _shifts[idx];
+    return apiClient.post<WorkShift>(ENDPOINTS.SHIFTS.ASSIGN(shiftId), { staffId });
   },
 
   // Remove staff from a shift
   removeStaff: async (shiftId: string, staffId: string): Promise<WorkShift> => {
-    await delay(400);
-    const idx = _shifts.findIndex((s) => s.id === shiftId);
-    if (idx === -1) throw new Error("Không tìm thấy ca làm");
-
-    const shift = _shifts[idx];
-    const staffIdx = shift.staffIds.indexOf(staffId);
-    const newStaffIds = shift.staffIds.filter((_, i) => i !== staffIdx);
-    const newStaffNames = shift.staffNames.filter((_, i) => i !== staffIdx);
-
-    _shifts[idx] = { ...shift, staffIds: newStaffIds, staffNames: newStaffNames };
-    return _shifts[idx];
+    return apiClient.post<WorkShift>(ENDPOINTS.SHIFTS.UNASSIGN(shiftId), { staffId });
   },
 
   // Update shift status
   updateStatus: async (shiftId: string, status: ShiftStatus): Promise<WorkShift> => {
-    await delay(300);
-    const idx = _shifts.findIndex((s) => s.id === shiftId);
-    if (idx === -1) throw new Error("Không tìm thấy ca làm");
-    _shifts[idx] = { ..._shifts[idx], status };
-    return _shifts[idx];
+    return apiClient.put<WorkShift>(ENDPOINTS.SHIFTS.UPDATE_STATUS(shiftId), { status });
   },
 
   // Update shift notes
   updateNotes: async (shiftId: string, notes: string): Promise<WorkShift> => {
-    await delay(300);
-    const idx = _shifts.findIndex((s) => s.id === shiftId);
-    if (idx === -1) throw new Error("Không tìm thấy ca làm");
-    _shifts[idx] = { ..._shifts[idx], notes };
-    return _shifts[idx];
+    return apiClient.put<WorkShift>(ENDPOINTS.SHIFTS.UPDATE_NOTES(shiftId), { notes });
   },
 
   // Delete a shift
   deleteShift: async (shiftId: string): Promise<void> => {
-    await delay(400);
-    _shifts = _shifts.filter((s) => s.id !== shiftId);
+    return apiClient.delete(ENDPOINTS.SHIFTS.DELETE(shiftId));
   },
 
   // Staff confirms shift start
   confirmStart: async (shiftId: string): Promise<WorkShift> => {
-    await delay(500);
-    const idx = _shifts.findIndex((s) => s.id === shiftId);
-    if (idx === -1) throw new Error("Không tìm thấy ca làm");
-    if (_shifts[idx].status !== "scheduled") throw new Error("Ca không ở trạng thái có thể bắt đầu");
-    _shifts[idx] = { ..._shifts[idx], status: "active" };
-    return _shifts[idx];
+    return shiftService.updateStatus(shiftId, "active");
   },
 
   // Staff confirms shift end with handover note
   confirmEnd: async (shiftId: string, handoverNote?: string): Promise<WorkShift> => {
-    await delay(500);
-    const idx = _shifts.findIndex((s) => s.id === shiftId);
-    if (idx === -1) throw new Error("Không tìm thấy ca làm");
-    if (_shifts[idx].status !== "active") throw new Error("Ca chưa được bắt đầu");
-    _shifts[idx] = {
-      ..._shifts[idx],
-      status: "completed",
-      notes: handoverNote ? `[Bàn giao] ${handoverNote}` : _shifts[idx].notes,
-    };
-    return _shifts[idx];
+    if (handoverNote) {
+      await shiftService.updateNotes(shiftId, `[Bàn giao] ${handoverNote}`);
+    }
+    return shiftService.updateStatus(shiftId, "completed");
   },
 
   // Get shift history for a specific staff
   getStaffShiftHistory: async (staffId: string): Promise<WorkShift[]> => {
-    await delay(300);
-    return _shifts
+    const shifts = await shiftService.getShifts();
+    return shifts
       .filter((s) => s.staffIds.includes(staffId))
       .sort((a, b) => `${b.date}${b.startTime}`.localeCompare(`${a.date}${a.startTime}`));
   },

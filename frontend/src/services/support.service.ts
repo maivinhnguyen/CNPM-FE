@@ -1,33 +1,41 @@
-import { mockSupportTickets, delay } from "@/mock/data";
-import type { SupportTicket, TicketCategory } from "@/types";
+import { apiClient } from "@/lib/api-client";
+import { ENDPOINTS } from "@/lib/endpoints";
+import type { SupportTicket, TicketCategory, TicketStatus } from "@/types";
 
-class SupportService {
-  private tickets: SupportTicket[] = [...mockSupportTickets];
+export const supportService = {
+  getMyTickets: async (userId: string): Promise<SupportTicket[]> => {
+    const res = await apiClient.get<SupportTicket[] | null>(ENDPOINTS.SUPPORT.MINE);
+    return res ?? [];
+  },
 
-  async getMyTickets(userId: string): Promise<SupportTicket[]> {
-    await delay(300);
-    return this.tickets
-      .filter((t) => t.userId === userId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }
-
-  async createTicket(userId: string, userName: string, category: TicketCategory, subject: string, description: string): Promise<SupportTicket> {
-    await delay(500);
-    const newTicket: SupportTicket = {
-      id: "st" + Date.now(),
-      userId,
-      userName,
+  createTicket: async (
+    userId: string,
+    userName: string,
+    category: TicketCategory,
+    subject: string,
+    description: string
+  ): Promise<SupportTicket> => {
+    return apiClient.post<SupportTicket>(ENDPOINTS.SUPPORT.CREATE, {
       category,
       subject,
       description,
-      status: "open",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      responses: []
-    };
-    this.tickets.unshift(newTicket);
-    return newTicket;
-  }
-}
+    });
+  },
 
-export const supportService = new SupportService();
+  getTicketById: async (id: string): Promise<SupportTicket> => {
+    return apiClient.get<SupportTicket>(ENDPOINTS.SUPPORT.BY_ID(id));
+  },
+
+  addResponse: async (id: string, message: string): Promise<SupportTicket> => {
+    return apiClient.post<SupportTicket>(ENDPOINTS.SUPPORT.RESPONSES(id), { message });
+  },
+
+  getAllTickets: async (): Promise<SupportTicket[]> => {
+    const res = await apiClient.get<SupportTicket[] | null>(ENDPOINTS.SUPPORT.LIST);
+    return res ?? [];
+  },
+
+  updateStatus: async (id: string, status: TicketStatus): Promise<SupportTicket> => {
+    return apiClient.put<SupportTicket>(ENDPOINTS.SUPPORT.UPDATE_STATUS(id), { status });
+  },
+};
