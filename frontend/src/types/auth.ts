@@ -1,4 +1,5 @@
 export type UserRole = "student" | "staff" | "admin";
+export type BackendRole = UserRole | "faculty";
 
 export interface Member {
   id: string;
@@ -13,9 +14,11 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: UserRole;
+  role: BackendRole;
   studentId?: string;
+  memberId?: string;
   avatar?: string;
+  status?: string;
   createdAt: string;
 }
 
@@ -40,7 +43,7 @@ export interface RegisterData {
   email: string;
   password: string;
   studentId?: string;
-  role: UserRole;
+  role: BackendRole;
 }
 
 export interface AuthResponse {
