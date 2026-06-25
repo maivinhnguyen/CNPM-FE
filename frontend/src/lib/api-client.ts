@@ -32,12 +32,16 @@ async function request<T>(
   body?: unknown,
   options?: RequestOptions,
 ): Promise<T> {
-  const url = new URL(`${BASE_URL}${path}`);
+  const resolvedUrl = BASE_URL.startsWith("http")
+    ? new URL(`${BASE_URL}${path}`).toString()
+    : `${BASE_URL}${path}`;
 
   if (options?.params) {
+    const searchParams = new URLSearchParams();
     Object.entries(options.params).forEach(([k, v]) =>
-      url.searchParams.set(k, String(v)),
+      searchParams.set(k, String(v)),
     );
+    resolvedUrl += (resolvedUrl.includes("?") ? "&" : "?") + searchParams.toString();
   }
 
   const { fetchBody, contentType } = prepareBody(body);
@@ -53,7 +57,7 @@ async function request<T>(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const res = await fetch(url, {
+  const res = await fetch(resolvedUrl, {
     ...fetchOptions,
     method,
     headers,
