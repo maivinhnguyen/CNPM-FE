@@ -5,24 +5,18 @@ import type {
   DailyData,
   VehicleLookupResult,
 } from "@/types";
-import {
-  mockParkingSessions,
-  mockParkingStats,
-  mockHourlyData,
-  mockDailyData,
-  mockVehicles,
-  delay,
-} from "@/mock/data";
-
-// In-memory sessions used by mock implementations
-const sessions = [...mockParkingSessions];
 import { apiClient } from "@/lib/api-client";
 import { ENDPOINTS } from "@/lib/endpoints";
-
 import { useAuthStore } from "@/stores/auth-store";
 import { cardService } from "@/services/card.service";
 import { vehicleService } from "@/services/vehicle.service";
-import type { Member, Card, Vehicle } from "@/types";
+import type { Member, Card } from "@/types";
+import {
+  mockParkingStats,
+  mockHourlyData,
+  mockDailyData,
+  delay,
+} from "@/mock/data";
 
 export const parkingService = {
   // TODO: return apiClient.get<ParkingStats>("/parking/stats");
@@ -81,11 +75,11 @@ export const parkingService = {
                     ENDPOINTS.SESSIONS.BY_CARD(card.cardUid)
                   );
                   allSessions.push(...cardSessions);
-                } catch (e) {
+                } catch {
                   // ignore
                 }
               }
-            } catch (e) {
+            } catch {
               // ignore
             }
           })
@@ -148,9 +142,9 @@ export const parkingService = {
     let cards: Card[] = [];
 
     try {
-      const owner = await apiClient.get<any>(ENDPOINTS.USERS.BY_ID(vehicle.ownerId));
+      const owner = await apiClient.get<{ id: string; email: string; name: string; memberId?: string }>(ENDPOINTS.USERS.BY_ID(vehicle.ownerId));
       if (owner && owner.memberId) {
-        const member = await apiClient.get<any>(ENDPOINTS.MEMBERS.BY_ID(owner.memberId));
+        const member = await apiClient.get<{ id: string; fullName: string; studentId?: string }>(ENDPOINTS.MEMBERS.BY_ID(owner.memberId));
         if (member) {
           ownerName = member.fullName;
           ownerStudentId = member.studentId;
@@ -177,7 +171,7 @@ export const parkingService = {
           activeSession = ongoing;
           break;
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
     }
@@ -196,7 +190,7 @@ export const parkingService = {
         if (ongoing) {
           activeSession = ongoing;
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
     }

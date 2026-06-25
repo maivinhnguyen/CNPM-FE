@@ -3,7 +3,7 @@ import { ENDPOINTS } from "@/lib/endpoints";
 import type { AppNotification } from "@/types";
 
 export const notificationService = {
-  getMyNotifications: async (userId: string): Promise<AppNotification[]> => {
+  getMyNotifications: async (): Promise<AppNotification[]> => {
     const res = await apiClient.get<AppNotification[] | null>(ENDPOINTS.NOTIFICATIONS.LIST);
     return res ?? [];
   },
@@ -12,7 +12,7 @@ export const notificationService = {
     return apiClient.post(ENDPOINTS.NOTIFICATIONS.MARK_READ(id));
   },
 
-  markAllAsRead: async (userId: string): Promise<void> => {
+  markAllAsRead: async (): Promise<void> => {
     return apiClient.post(ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ);
   },
 };

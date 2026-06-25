@@ -11,8 +11,7 @@ export const deviceService = {
   getById: async (id: string): Promise<Device | null> => {
     try {
       return await apiClient.get<Device>(ENDPOINTS.DEVICES.BY_ID(id));
-    } catch (e) {
-      console.error(`Failed to get device by ID ${id}:`, e);
+    } catch {
       return null;
     }
   },
@@ -54,7 +53,7 @@ export const deviceService = {
         maintenance: devices.filter((d) => d.status === "maintenance").length,
         totalAlerts: alerts.length,
       };
-    } catch (e) {
+    } catch {
       return {
         total: 0,
         online: 0,

@@ -1,6 +1,6 @@
 import { apiClient } from "@/lib/api-client";
 import { ENDPOINTS } from "@/lib/endpoints";
-import type { ParkingLot, ParkingLotStatus, ParkingLotType } from "@/types";
+import type { ParkingLot, ParkingLotStatus } from "@/types";
 
 export const parkingLotService = {
   getAll: async (): Promise<ParkingLot[]> => {
@@ -11,8 +11,7 @@ export const parkingLotService = {
   getById: async (id: string): Promise<ParkingLot | null> => {
     try {
       return await apiClient.get<ParkingLot>(ENDPOINTS.PARKING_LOTS.BY_ID(id));
-    } catch (e) {
-      console.error(`Failed to get parking lot by ID ${id}:`, e);
+    } catch {
       return null;
     }
   },
@@ -47,7 +46,7 @@ export const parkingLotService = {
         currentOccupancy: occupied,
         occupancyRate: total > 0 ? Math.round((occupied / total) * 100) : 0,
       };
-    } catch (e) {
+    } catch {
       return {
         totalLots: 0,
         activeLots: 0,

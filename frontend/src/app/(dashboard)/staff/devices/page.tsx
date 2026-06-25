@@ -12,11 +12,10 @@ import { Label } from "@/components/ui/label";
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
 import {
   Camera, GitBranch, ScanLine, Radio,
-  Wifi, WifiOff, AlertTriangle, Wrench, CheckCircle2,
+  WifiOff, Wrench, CheckCircle2,
   Clock, Bell, RefreshCw, Flag,
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { vi } from "date-fns/locale";
+
 import { toast } from "sonner";
 import type { Device, DeviceType, DeviceStatus } from "@/types";
 

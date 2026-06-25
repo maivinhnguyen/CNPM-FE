@@ -125,7 +125,7 @@ export default function MonthlyPassPage() {
 
   const { data: vehicles, isLoading: vehicleLoading } = useQuery({
     queryKey: ["my-vehicles", user?.id],
-    queryFn: () => vehicleService.getMyVehicles(user!.id),
+    queryFn: () => vehicleService.getMyVehicles(),
     enabled: !!user,
   });
 

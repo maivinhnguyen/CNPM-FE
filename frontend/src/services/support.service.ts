@@ -3,7 +3,7 @@ import { ENDPOINTS } from "@/lib/endpoints";
 import type { SupportTicket, TicketCategory, TicketStatus } from "@/types";
 
 export const supportService = {
-  getMyTickets: async (userId: string): Promise<SupportTicket[]> => {
+  getMyTickets: async (): Promise<SupportTicket[]> => {
     const res = await apiClient.get<SupportTicket[] | null>(ENDPOINTS.SUPPORT.MINE);
     return res ?? [];
   },

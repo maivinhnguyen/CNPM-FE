@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useAuthStore } from "@/stores/auth-store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { incidentService } from "@/services/incident.service";
-import { shiftService } from "@/services/shift.service";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,9 +14,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
 import {
   AlertTriangle, Plus, CheckCircle2, ArrowUpCircle,
-  Clock, Car, X, Filter,
+  Clock, Car, X,
 } from "lucide-react";
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { toast } from "sonner";
 import type { IncidentType, IncidentStatus, Incident } from "@/types";

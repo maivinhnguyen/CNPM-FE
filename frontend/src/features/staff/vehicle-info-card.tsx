@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Car, User, Hash, Palette, GraduationCap } from "lucide-react";
+import { Car, User, Palette, GraduationCap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { VehicleLookupResult } from "@/types";
 

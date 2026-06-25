@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Navbar } from "@/components/layout/navbar";
 import { cn } from "@/lib/utils";
+
+const subscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 export default function DashboardLayout({
   children,
@@ -14,19 +18,15 @@ export default function DashboardLayout({
 }) {
   const { isAuthenticated, user } = useAuthStore();
   const router = useRouter();
-  const [isMounted, setIsMounted] = useState(false);
+  const isClient = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isMounted && (!isAuthenticated || !user)) {
+    if (isClient && (!isAuthenticated || !user)) {
       router.replace("/login");
     }
-  }, [isMounted, isAuthenticated, user, router]);
+  }, [isClient, isAuthenticated, user, router]);
 
-  if (!isMounted || !isAuthenticated || !user) {
+  if (!isClient || !isAuthenticated || !user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-pulse text-muted-foreground">Loading...</div>

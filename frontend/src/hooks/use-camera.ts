@@ -21,21 +21,21 @@ interface UseCameraReturn {
 export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
   const { facingMode = "user", width = 640, height = 480 } = options;
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
   const [isActive, setIsActive] = useState(false);
   const [isAvailable, setIsAvailable] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const stop = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
     }
     if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
+    setStream(null);
     setIsActive(false);
-  }, []);
+  }, [stream]);
 
   const start = useCallback(async () => {
     try {
@@ -53,7 +53,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
       const mediaStream =
         await navigator.mediaDevices.getUserMedia(constraints);
 
-      streamRef.current = mediaStream;
+      setStream(mediaStream);
 
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
@@ -81,13 +81,16 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      stop();
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
     };
-  }, [stop]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     videoRef,
-    stream: streamRef.current,
+    stream,
     isActive,
     isAvailable,
     error,

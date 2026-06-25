@@ -13,8 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
 import {
   Building2, Plus, Search, MapPin, Clock, Phone, User,
-  ChevronDown, ChevronUp, Edit2, Trash2, X, Check,
-  TrendingUp, Car, CheckCircle2, Wrench, XCircle,
+  ChevronDown, ChevronUp, Trash2, X, Check,
+  Car, CheckCircle2, Wrench, XCircle,
   ParkingCircle, Layers, Trees,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -376,7 +376,7 @@ export default function AdminParkingLotsPage() {
             { label: "Tỷ lệ lấp đầy",   value: `${summary.occupancyRate}%`,
               color: summary.occupancyRate >= 90 ? "text-red-600" : summary.occupancyRate >= 70 ? "text-amber-600" : "text-emerald-600",
               bg: summary.occupancyRate >= 90 ? "bg-red-500/10" : "bg-muted" },
-          ].map(({ label, value, color, bg }) => (
+          ].map(({ label, value, color }) => (
             <Card key={label}>
               <CardContent className="pt-3 pb-3">
                 <p className={`text-xl font-bold ${color}`}>{value}</p>
@@ -395,7 +395,7 @@ export default function AdminParkingLotsPage() {
         <Card className="border-red-500/40 bg-red-500/5">
           <CardContent className="pt-4 pb-4 flex items-center justify-between gap-4">
             <p className="text-sm">
-              Xác nhận xóa nhà xe <span className="font-semibold">"{deleteTarget.name}"</span>? Thao tác này không thể hoàn tác.
+              Xác nhận xóa nhà xe <span className="font-semibold">&ldquo;{deleteTarget.name}&rdquo;</span>? Thao tác này không thể hoàn tác.
             </p>
             <div className="flex gap-2 shrink-0">
               <Button size="sm" variant="outline" onClick={() => setDeleteTarget(null)}>Hủy</Button>

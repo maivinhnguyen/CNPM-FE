@@ -16,7 +16,7 @@ interface BackendTransaction {
 }
 
 let _monthlyPasses: MonthlyPass[] = [...mockMonthlyPasses];
-let _wallets: Wallet[] = mockWallets.map((w) => ({
+const _wallets: Wallet[] = mockWallets.map((w) => ({
   ...w,
   transactions: [...w.transactions],
 }));
@@ -49,7 +49,7 @@ export const walletService = {
               description: t.type === "deposit" 
                 ? `Nạp tiền vào thẻ ${t.cardUid}` 
                 : `Thanh toán phí gửi xe (Thẻ ${t.cardUid})`,
-              method: (t.paymentMethod as any) || "bank_qr",
+              method: (t.paymentMethod as WalletPaymentMethod) || "bank_qr",
               status: "completed",
               createdAt: t.createdAt,
             });
@@ -78,8 +78,7 @@ export const walletService = {
   // Top up wallet
   topUp: async (
     userId: string,
-    amount: number,
-    method: WalletPaymentMethod
+    amount: number
   ): Promise<Wallet> => {
     const user = useAuthStore.getState().user;
     if (!user || !user.memberId) {

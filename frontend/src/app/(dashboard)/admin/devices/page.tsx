@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { deviceService } from "@/services/device.service";
 import { PageHeader } from "@/components/shared/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,8 +13,8 @@ import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
 import {
   Cpu, Camera, GitBranch, ScanLine, Radio,
   Wifi, WifiOff, AlertTriangle, Wrench, CheckCircle2,
-  Clock, Search, ChevronDown, ChevronUp, Bell, X,
-  RefreshCw, Settings,
+  Search, ChevronDown, ChevronUp, Bell,
+  RefreshCw,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
@@ -43,7 +43,6 @@ function DeviceCard({ device, alerts, onStatusChange, onResolveAlert, isActing }
   isActing: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const [showStatusMenu, setShowStatusMenu] = useState(false);
   const [noteVal, setNoteVal] = useState(device.notes ?? "");
 
   const { icon: TypeIcon } = TYPE_CONFIG[device.type];
@@ -238,7 +237,7 @@ export default function AdminDevicesPage() {
             { label: "Cảnh báo", value: summary.warning, color: summary.warning > 0 ? "text-amber-600" : "text-muted-foreground", bg: summary.warning > 0 ? "bg-amber-500/10" : "bg-muted" },
             { label: "Bảo trì", value: summary.maintenance, color: "text-blue-600", bg: "bg-blue-500/10" },
             { label: "Mất kết nối", value: summary.offline, color: summary.offline > 0 ? "text-red-600" : "text-muted-foreground", bg: summary.offline > 0 ? "bg-red-500/10" : "bg-muted" },
-          ].map(({ label, value, color, bg }) => (
+          ].map(({ label, value, color }) => (
             <Card key={label}>
               <CardContent className="pt-3 pb-3">
                 <p className={`text-2xl font-bold ${color}`}>{value}</p>

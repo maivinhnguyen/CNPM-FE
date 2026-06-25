@@ -4,17 +4,16 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { transactionService } from "@/services/transaction.service";
 import { PageHeader } from "@/components/shared/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
 import {
-  Receipt, Search, TrendingUp, CheckCircle2,
+  Receipt, Search, CheckCircle2,
   XCircle, Clock, Banknote, CreditCard,
   Wallet, Contact, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { format } from "date-fns";
-import { vi } from "date-fns/locale";
 import type { Transaction, TransactionType, TransactionStatus, PaymentMethod } from "@/types";
 
 // ── Config ─────────────────────────────────────────────────────
@@ -45,7 +44,7 @@ function formatCurrency(amount: number) {
 function TransactionRow({ tx }: { tx: Transaction }) {
   const [expanded, setExpanded] = useState(false);
   const { label: typeLabel } = TYPE_CONFIG[tx.type];
-  const { label: statusLabel, color: statusColor, icon: StatusIcon } = STATUS_CONFIG[tx.status];
+  const { label: statusLabel, color: statusColor } = STATUS_CONFIG[tx.status];
   const { label: paymentLabel, icon: PaymentIcon } = PAYMENT_CONFIG[tx.paymentMethod];
 
   return (

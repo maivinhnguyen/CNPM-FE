@@ -52,7 +52,7 @@ export default function StudentVehiclesPage() {
 
   const { data: vehicles, isLoading } = useQuery({
     queryKey: ["my-vehicles", user?.id],
-    queryFn: () => vehicleService.getMyVehicles(user!.id),
+    queryFn: () => vehicleService.getMyVehicles(),
     enabled: !!user,
   });
 

@@ -44,7 +44,7 @@ export const authService = {
     };
   },
 
-  async register(data: RegisterData): Promise<any> {
+  async register(data: RegisterData): Promise<void> {
     return apiClient.post(ENDPOINTS.AUTH.REGISTER, data);
   },
 

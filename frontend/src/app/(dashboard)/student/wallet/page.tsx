@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { walletService } from "@/services/wallet.service";
@@ -17,10 +16,9 @@ import {
   Banknote, Smartphone, TrendingUp, History, ChevronRight,
   Copy, CheckCheck, X, Info, BarChart
 } from "lucide-react";
-import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart as RechartsBarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import {
   TOPUP_PRESETS,
-  TRANSACTION_TYPE_LABELS,
   PAYMENT_METHOD_LABELS,
 } from "@/lib/constants";
 import { format } from "date-fns";
@@ -171,7 +169,7 @@ export default function WalletPage() {
   });
 
   const topupMutation = useMutation({
-    mutationFn: () => walletService.topUp(user!.id, amount, method),
+    mutationFn: () => walletService.topUp(user!.id, amount),
     onSuccess: (updated) => {
       toast.success(`Nạp ${amount.toLocaleString("vi-VN")}đ thành công!`);
       queryClient.setQueryData(["wallet", user?.id], updated);
@@ -201,9 +199,9 @@ export default function WalletPage() {
   // Prepare chart data
   const chartData = [...txs]
     .filter(t => t.amount < 0) // only spending
-    .reduce((acc: any, t) => {
+    .reduce((acc: Array<{ month: string; spending: number }>, t) => {
       const month = format(new Date(t.createdAt), "MM/yyyy");
-      const existing = acc.find((a: any) => a.month === month);
+      const existing = acc.find((a) => a.month === month);
       if (existing) {
         existing.spending += Math.abs(t.amount);
       } else {

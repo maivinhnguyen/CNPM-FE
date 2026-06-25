@@ -8,7 +8,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { authService } from "@/services/auth.service";
-import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -47,7 +46,6 @@ const inputCls =
 
 export default function RegisterPage() {
   const router = useRouter();
-  const setAuth = useAuthStore((s) => s.setAuth);
   const [isLoading, setIsLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);

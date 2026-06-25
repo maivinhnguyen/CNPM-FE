@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useAuthStore } from "@/stores/auth-store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { shiftService } from "@/services/shift.service";
 import { PageHeader } from "@/components/shared/page-header";
@@ -210,7 +209,6 @@ function ShiftCard({
 }
 
 export default function AdminShiftsPage() {
-  const user = useAuthStore((s) => s.user);
   const queryClient = useQueryClient();
   const [baseDate, setBaseDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
@@ -231,7 +229,7 @@ export default function AdminShiftsPage() {
 
   const assignMutation = useMutation({
     mutationFn: ({ shiftId, staffId }: { shiftId: string; staffId: string }) =>
-      shiftService.assignStaff(shiftId, staffId, user?.name ?? "Admin"),
+      shiftService.assignStaff(shiftId, staffId),
     onSuccess: () => { toast.success("Đã phân công nhân viên!"); queryClient.invalidateQueries({ queryKey: ["shifts"] }); },
     onError: (err: Error) => toast.error(err.message),
   });

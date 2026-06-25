@@ -41,7 +41,8 @@ async function request<T>(
   }
 
   const { fetchBody, contentType } = prepareBody(body);
-  const { params: _, ...fetchOptions } = options ?? {};
+  const { params: _unused, ...fetchOptions } = options ?? {};
+  void _unused;
 
   const token = useAuthStore.getState().token;
   const headers: Record<string, string> = {

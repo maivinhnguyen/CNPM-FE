@@ -37,7 +37,7 @@ import type { UserRole, Member } from "@/types";
 import { userService } from "@/services/user.service";
 import { apiClient } from "@/lib/api-client";
 import { ENDPOINTS } from "@/lib/endpoints";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -118,7 +118,7 @@ export default function AdminUsersPage() {
     },
   });
 
-  const watchRole = form.watch("role");
+  const watchRole = useWatch({ control: form.control, name: "role" });
 
   const createUserMutation = useMutation({
     mutationFn: async (values: UserFormValues) => {

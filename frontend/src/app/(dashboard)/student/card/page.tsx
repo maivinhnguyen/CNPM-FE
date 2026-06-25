@@ -220,13 +220,13 @@ export default function StudentCardPage() {
 
   const { data: cardRequest, isLoading: reqLoading } = useQuery({
     queryKey: ["my-card-request", user?.id],
-    queryFn: () => cardService.getMyCardRequest(user!.id),
+    queryFn: () => cardService.getMyCardRequest(),
     enabled: !!user,
   });
 
   const { data: vehicles = [], isLoading: vLoading } = useQuery({
     queryKey: ["my-vehicles", user?.id],
-    queryFn: () => vehicleService.getMyVehicles(user!.id),
+    queryFn: () => vehicleService.getMyVehicles(),
     enabled: !!user,
   });
 
@@ -267,7 +267,7 @@ export default function StudentCardPage() {
 
   if (reqLoading || vLoading) return <LoadingSkeleton type="page" />;
 
-  const hasActiveRequest = cardRequest && cardRequest.status !== "rejected";
+
 
   return (
     <div className="space-y-6 max-w-2xl">

@@ -62,6 +62,14 @@ export default function StaffCheckPage() {
     return res.blob();
   };
 
+  // ── Reset (defined first to avoid hoisting issues) ─────
+
+  const handleResetInternal = useCallback(() => {
+    setFlowState("idle");
+    setResult(null);
+    setAlertType(null);
+  }, []);
+
   // ── Lookup ──────────────────────────────────────────────
 
   const handleLookup = useCallback(async (plateStr: string) => {
@@ -85,7 +93,7 @@ export default function StaffCheckPage() {
       toast.error("Lookup failed");
       setFlowState("idle");
     }
-  }, []);
+  }, [handleResetInternal]);
 
   const handleGuestCheckIn = useCallback(() => {
     if (!guestPlate) {
@@ -112,18 +120,12 @@ export default function StaffCheckPage() {
     setResult(guestResult);
     setFlowState("review_checkin");
     setGuestPlate("");
-  }, [guestPlate]);
+  }, [guestPlate, handleResetInternal]);
 
   // 51D3-11111 = v3 (Pham Duc Huy, Honda Vision) — not currently parked → triggers check-in flow
   const handleMockCheckInSwipe = () => handleLookup("51D3-11111");
   // 59F1-12345 = v1 (Nguyen Van An, Honda Wave Alpha) — currently checked-in (record p1) → triggers checkout flow
   const handleMockCheckOutSwipe = () => handleLookup("59F1-12345");
-  
-  const handleResetInternal = () => {
-    setFlowState("idle");
-    setResult(null);
-    setAlertType(null);
-  };
 
   // ── Check-in ────────────────────────────────────────────
 
@@ -194,11 +196,7 @@ export default function StaffCheckPage() {
   // ── Computed ────────────────────────────────────────────
 
   const isProcessing = flowState === "lookup" || flowState === "capturing";
-  const showCameras = true; // Cameras are strictly camera-first layout now
   const showInfo = flowState === "review_checkin" || flowState === "review_checkout" || flowState === "alert";
-  const showComparison =
-    flowState === "review_checkout" &&
-    result?.checkInImages;
   const showActions = showInfo || flowState === "capturing";
   const occupancyPercent = Math.round(
     (currentOccupancy / totalCapacity) * 100

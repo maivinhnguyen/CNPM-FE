@@ -1,7 +1,7 @@
 import { apiClient } from "@/lib/api-client";
 import { ENDPOINTS } from "@/lib/endpoints";
 import { vehicleService } from "@/services/vehicle.service";
-import type { Incident, IncidentStatus, IncidentType } from "@/types";
+import type { Incident } from "@/types";
 
 export const incidentService = {
   getAll: async (staffId?: string): Promise<Incident[]> => {
@@ -34,7 +34,7 @@ export const incidentService = {
     try {
       const incs = await incidentService.getAll(staffId);
       return incs.filter((i) => i.status === "open").length;
-    } catch (e) {
+    } catch {
       return 0;
     }
   },
@@ -45,10 +45,10 @@ export const incidentService = {
     if (!vehicle) return null;
     
     try {
-      const owner = await apiClient.get<any>(ENDPOINTS.USERS.BY_ID(vehicle.ownerId));
+      const owner = await apiClient.get<{ id: string; email: string; name: string; memberId?: string; studentId?: string }>(ENDPOINTS.USERS.BY_ID(vehicle.ownerId));
       return { vehicle, owner };
-    } catch (e) {
-      return { vehicle, owner: { id: vehicle.ownerId, name: vehicle.ownerName, email: "" } };
+    } catch {
+      return { vehicle, owner: { id: vehicle.ownerId, name: vehicle.ownerName, email: "", studentId: "" } };
     }
   },
 };

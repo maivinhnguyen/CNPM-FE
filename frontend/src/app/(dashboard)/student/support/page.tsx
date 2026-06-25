@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
-import { LifeBuoy, MessageSquare, Send, CheckCircle2, Clock } from "lucide-react";
+import { LifeBuoy, MessageSquare, Send } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -28,7 +28,7 @@ export default function SupportPage() {
 
   const { data: tickets, isLoading } = useQuery({
     queryKey: ["my-tickets", user?.id],
-    queryFn: () => supportService.getMyTickets(user!.id),
+    queryFn: () => supportService.getMyTickets(),
     enabled: !!user,
   });
 

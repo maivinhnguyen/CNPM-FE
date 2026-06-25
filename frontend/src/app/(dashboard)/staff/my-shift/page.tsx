@@ -18,9 +18,9 @@ import {
   PlayCircle, StopCircle, ClipboardList, ChevronDown,
   ChevronUp, Loader2, MessageSquare, History, ArrowRight,
 } from "lucide-react";
-import { format, isToday, isTomorrow, isYesterday, parseISO, differenceInMinutes } from "date-fns";
+import { format, isToday, isTomorrow, isYesterday, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
-import { SHIFT_TYPE_LABELS, SHIFT_STATUS_LABELS, SHIFT_STATUS_COLORS, SHIFT_TYPE_COLORS } from "@/lib/constants";
+import { SHIFT_STATUS_LABELS, SHIFT_STATUS_COLORS, SHIFT_TYPE_COLORS } from "@/lib/constants";
 import { toast } from "sonner";
 import type { WorkShift, ShiftType } from "@/types";
 import Link from "next/link";
@@ -163,7 +163,7 @@ function ActiveShiftPanel({ shift, onEnd }: { shift: WorkShift; onEnd: () => voi
 
 // ── Upcoming Shift Card ────────────────────────────────────────
 function UpcomingShiftCard({ shift, onStart, isStarting }: { shift: WorkShift; onStart: (id: string) => void; isStarting: boolean }) {
-  const [showNote, setShowNote] = useState(false);
+
   const Icon = SHIFT_ICONS[shift.type];
   const isNow = isToday(parseISO(shift.date));
 

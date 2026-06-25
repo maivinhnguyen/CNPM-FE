@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
-import { UserPlus, QrCode, CheckCircle2, Calendar, Car } from "lucide-react";
+import { UserPlus, CheckCircle2, Calendar, Car } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -27,7 +27,7 @@ export default function VisitorPage() {
 
   const { data: passes, isLoading } = useQuery({
     queryKey: ["my-visitor-passes", user?.id],
-    queryFn: () => visitorService.getMyPasses(user!.id),
+    queryFn: () => visitorService.getMyPasses(),
     enabled: !!user,
   });
 

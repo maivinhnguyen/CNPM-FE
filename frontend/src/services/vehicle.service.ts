@@ -3,7 +3,7 @@ import { ENDPOINTS } from "@/lib/endpoints";
 import type { Vehicle, VehicleCreateData } from "@/types";
 
 export const vehicleService = {
-  async getMyVehicles(ownerId: string): Promise<Vehicle[]> {
+  async getMyVehicles(): Promise<Vehicle[]> {
     const res = await apiClient.get<Vehicle[] | null>(ENDPOINTS.VEHICLES.MINE);
     return res ?? [];
   },

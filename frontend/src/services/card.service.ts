@@ -4,7 +4,7 @@ import type { CardRequest, CardRequestStatus, Card } from "@/types";
 
 export const cardService = {
   // Student: get my current card request
-  getMyCardRequest: async (userId: string): Promise<CardRequest | null> => {
+  getMyCardRequest: async (): Promise<CardRequest | null> => {
     try {
       const requests = await apiClient.get<CardRequest[]>(ENDPOINTS.CARD_REQUESTS.MINE);
       if (!requests || requests.length === 0) return null;
@@ -47,15 +47,14 @@ export const cardService = {
     try {
       const pending = await cardService.getAllCardRequests("pending");
       return pending.length;
-    } catch (e) {
+    } catch {
       return 0;
     }
   },
 
   // Admin: approve a card request
   approveCardRequest: async (
-    id: string,
-    reviewedBy: string
+    id: string
   ): Promise<CardRequest> => {
     const cardUid = `CARD-${String(Date.now()).slice(-4)}`;
     return apiClient.post<CardRequest>(ENDPOINTS.CARD_REQUESTS.APPROVE(id), { cardUid });
@@ -64,8 +63,7 @@ export const cardService = {
   // Admin: reject a card request
   rejectCardRequest: async (
     id: string,
-    reason: string,
-    reviewedBy: string
+    reason: string
   ): Promise<CardRequest> => {
     return apiClient.post<CardRequest>(ENDPOINTS.CARD_REQUESTS.REJECT(id), { reason });
   },

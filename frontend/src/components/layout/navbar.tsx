@@ -73,7 +73,7 @@ function NotificationDropdown({ userId }: { userId: string }) {
   const queryClient = useQueryClient();
   const { data: notifications = [] } = useQuery({
     queryKey: ["notifications", userId],
-    queryFn: () => notificationService.getMyNotifications(userId),
+    queryFn: () => notificationService.getMyNotifications(),
     refetchInterval: 30000,
   });
 
@@ -83,7 +83,7 @@ function NotificationDropdown({ userId }: { userId: string }) {
   });
 
   const markAllAsRead = useMutation({
-    mutationFn: () => notificationService.markAllAsRead(userId),
+    mutationFn: () => notificationService.markAllAsRead(),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications", userId] }),
   });
 

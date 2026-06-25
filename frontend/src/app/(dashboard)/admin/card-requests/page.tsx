@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useAuthStore } from "@/stores/auth-store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { cardService } from "@/services/card.service";
 import { PageHeader } from "@/components/shared/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -147,7 +146,6 @@ function RequestRow({
 }
 
 export default function AdminCardRequestsPage() {
-  const user = useAuthStore((s) => s.user);
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<Filter>("pending");
 
@@ -162,7 +160,7 @@ export default function AdminCardRequestsPage() {
   });
 
   const approveMutation = useMutation({
-    mutationFn: (id: string) => cardService.approveCardRequest(id, user?.name ?? "Admin"),
+    mutationFn: (id: string) => cardService.approveCardRequest(id),
     onSuccess: () => {
       toast.success("Đã duyệt yêu cầu thành công!");
       queryClient.invalidateQueries({ queryKey: ["card-requests"] });
@@ -173,7 +171,7 @@ export default function AdminCardRequestsPage() {
 
   const rejectMutation = useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
-      cardService.rejectCardRequest(id, reason, user?.name ?? "Admin"),
+      cardService.rejectCardRequest(id, reason),
     onSuccess: () => {
       toast.success("Đã từ chối yêu cầu.");
       queryClient.invalidateQueries({ queryKey: ["card-requests"] });
@@ -185,7 +183,6 @@ export default function AdminCardRequestsPage() {
   if (isLoading) return <LoadingSkeleton type="page" />;
 
   const allRequests = requests ?? [];
-  const pendingReqs = allRequests.filter((r) => r.status === "pending");
   const approvedReqs = allRequests.filter((r) => r.status === "approved");
   const isActing = approveMutation.isPending || rejectMutation.isPending;
 

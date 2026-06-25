@@ -3,7 +3,7 @@ import { ENDPOINTS } from "@/lib/endpoints";
 import type { VisitorPass } from "@/types";
 
 export const visitorService = {
-  getMyPasses: async (userId: string): Promise<VisitorPass[]> => {
+  getMyPasses: async (): Promise<VisitorPass[]> => {
     const res = await apiClient.get<VisitorPass[] | null>(ENDPOINTS.VISITOR.MINE);
     return res ?? [];
   },

@@ -4,15 +4,15 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { incidentService } from "@/services/incident.service";
 import { PageHeader } from "@/components/shared/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
 import {
-  AlertTriangle, CheckCircle2, ArrowUpCircle, Clock,
-  Car, User, Filter, Search, ShieldAlert, TrendingUp,
+  AlertTriangle, CheckCircle2, Clock,
+  Car, User, Search, ShieldAlert, TrendingUp,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";

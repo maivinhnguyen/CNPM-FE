@@ -34,7 +34,7 @@ export const transactionService = {
                     amount: t.amount,
                     type: t.type === "deposit" ? "subscription" : "parking_fee", // Map deposit to subscription/topup for UI compatibility
                     status: "success",
-                    paymentMethod: (t.paymentMethod as any) || "rfid_card",
+                    paymentMethod: t.paymentMethod as Transaction["paymentMethod"] ?? "rfid_card",
                     description: t.type === "deposit" 
                       ? `Nạp tiền vào thẻ ${t.cardUid}` 
                       : `Phí gửi xe theo lượt (Thẻ ${t.cardUid})`,
@@ -42,11 +42,11 @@ export const transactionService = {
                     createdAt: t.createdAt,
                   });
                 });
-              } catch (e) {
+              } catch {
                 // ignore
               }
             }
-          } catch (e) {
+          } catch {
             // ignore
           }
         })
@@ -80,7 +80,7 @@ export const transactionService = {
         totalTransactions: txs.length,
         successCount: successTxs.length,
       };
-    } catch (e) {
+    } catch {
       return {
         totalRevenue: 0,
         parkingFees: 0,

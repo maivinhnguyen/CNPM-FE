@@ -3,7 +3,6 @@ import { ENDPOINTS } from "@/lib/endpoints";
 import type { WorkShift, ShiftStatus } from "@/types";
 
 export const shiftService = {
-  // Get all shifts, optionally filtered by date range and/or staff
   getShifts: async (fromDate?: string, toDate?: string, staffId?: string): Promise<WorkShift[]> => {
     const params = {
       ...(fromDate && { from: fromDate }),
@@ -14,14 +13,12 @@ export const shiftService = {
     return res ?? [];
   },
 
-  // Get shifts for a specific date
   getShiftsByDate: async (date: string): Promise<WorkShift[]> => {
     return shiftService.getShifts(date, date);
   },
 
-  // Get all staff users
   getStaffList: async () => {
-    const users = await apiClient.get<any[] | null>(ENDPOINTS.USERS.LIST);
+    const users = await apiClient.get<{ id: string; email: string; role: string; createdAt: string }[] | null>(ENDPOINTS.USERS.LIST);
     return (users ?? [])
       .filter((u) => u.role === "staff")
       .map((u) => ({
@@ -33,7 +30,6 @@ export const shiftService = {
       }));
   },
 
-  // Create a new shift
   createShift: async (data: Omit<WorkShift, "id" | "status" | "staffIds" | "staffNames">): Promise<WorkShift> => {
     return apiClient.post<WorkShift>(ENDPOINTS.SHIFTS.CREATE, {
       name: data.name,
@@ -45,17 +41,14 @@ export const shiftService = {
     });
   },
 
-  // Assign staff to a shift
-  assignStaff: async (shiftId: string, staffId: string, assignedBy: string): Promise<WorkShift> => {
+  assignStaff: async (shiftId: string, staffId: string): Promise<WorkShift> => {
     return apiClient.post<WorkShift>(ENDPOINTS.SHIFTS.ASSIGN(shiftId), { staffId });
   },
 
-  // Remove staff from a shift
   removeStaff: async (shiftId: string, staffId: string): Promise<WorkShift> => {
     return apiClient.post<WorkShift>(ENDPOINTS.SHIFTS.UNASSIGN(shiftId), { staffId });
   },
 
-  // Update shift status
   updateStatus: async (shiftId: string, status: ShiftStatus): Promise<WorkShift> => {
     return apiClient.put<WorkShift>(ENDPOINTS.SHIFTS.UPDATE_STATUS(shiftId), { status });
   },
