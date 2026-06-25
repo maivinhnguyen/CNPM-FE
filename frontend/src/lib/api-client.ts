@@ -32,7 +32,7 @@ async function request<T>(
   body?: unknown,
   options?: RequestOptions,
 ): Promise<T> {
-  const resolvedUrl = BASE_URL.startsWith("http")
+  let resolvedUrl = BASE_URL.startsWith("http")
     ? new URL(`${BASE_URL}${path}`).toString()
     : `${BASE_URL}${path}`;
 
