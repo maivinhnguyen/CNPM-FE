@@ -133,7 +133,7 @@ export default function StaffDevicesPage() {
   const problemDevices = devices.filter((d) => d.status === "offline" || d.status === "warning");
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-2xl mx-auto">
       <div className="flex items-start justify-between">
         <PageHeader
           title="Trạng Thái Thiết Bị"

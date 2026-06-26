@@ -10,9 +10,14 @@ export type RequestOptions = Omit<RequestInit, "method" | "body"> & {
 export class ApiError extends Error {
   constructor(
     public status: number,
-    public data: unknown,
+    public data: { error?: string } | unknown,
   ) {
-    super(`API Error ${status}`);
+    const msg =
+      data && typeof data === "object" && "error" in (data as Record<string, unknown>)
+        ? (data as { error: string }).error
+        : `API Error ${status}`;
+    super(msg);
+    this.name = "ApiError";
   }
 }
 

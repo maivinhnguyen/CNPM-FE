@@ -34,10 +34,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 
 const vehicleSchema = z.object({
-  licensePlate: z
-    .string()
-    .min(1, "License plate is required")
-    .regex(/^[0-9]{2}[A-Z][0-9]?-[0-9]{3,5}$/, "Format: 59F1-12345"),
+  licensePlate: z.string().min(1, "License plate is required"),
   brand: z.string().min(1, "Brand is required"),
   model: z.string().min(1, "Model is required"),
   color: z.string().min(1, "Color is required"),

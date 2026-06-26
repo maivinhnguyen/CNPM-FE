@@ -25,9 +25,11 @@ export const ENDPOINTS = {
     UPDATE: (cardUid: string) => `/cards/${cardUid}`,
     TOGGLE: (cardUid: string) => `/cards/${cardUid}/toggle`,
     DELETE: (cardUid: string) => `/cards/${cardUid}`,
+    AVAILABLE_CASUAL: "/cards/casual-available",
   },
   PAYMENT: {
     DEPOSIT: (cardUid: string) => `/cards/${cardUid}/deposit`,
+    WITHDRAW: (cardUid: string) => `/cards/${cardUid}/withdraw`,
     BALANCE: (cardUid: string) => `/cards/${cardUid}/balance`,
     TRANSACTIONS: (cardUid: string) => `/cards/${cardUid}/transactions`,
   },
@@ -35,6 +37,7 @@ export const ENDPOINTS = {
     CHECK_IN: "/sessions/checkin",
     CHECK_OUT: (id: string | number) => `/sessions/${id}/checkout`,
     BY_CARD: (cardUid: string) => `/sessions/card/${cardUid}`,
+    BY_PLATE: (plate: string) => `/sessions/plate/${encodeURIComponent(plate)}`,
     BY_ID: (id: string | number) => `/sessions/${id}`,
   },
   CARD_REQUESTS: {
@@ -104,5 +107,10 @@ export const ENDPOINTS = {
     LIST: "/vehicles",
     BY_PLATE: (plate: string) => `/vehicles/plate/${plate}`,
     DELETE: (id: string) => `/vehicles/${id}`,
+  },
+  MONTHLY_PASS: {
+    LIST: "/monthly-passes",
+    CREATE: "/monthly-passes",
+    TOGGLE_AUTO_RENEW: (id: string) => `/monthly-passes/${id}/toggle-auto-renew`,
   },
 } as const;

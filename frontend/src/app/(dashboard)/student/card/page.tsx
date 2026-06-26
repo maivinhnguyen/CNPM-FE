@@ -270,7 +270,7 @@ export default function StudentCardPage() {
 
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-2xl mx-auto">
       <PageHeader
         title="Đăng Ký Thẻ Xe"
         description="Đăng ký thẻ RFID để ra vào bãi đỗ xe thông minh"

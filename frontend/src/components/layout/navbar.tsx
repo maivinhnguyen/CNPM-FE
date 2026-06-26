@@ -31,6 +31,19 @@ import {
   BarChart3,
   Users,
   FileText,
+  CreditCard,
+  CalendarCheck,
+  Wallet,
+  UserPlus,
+  LifeBuoy,
+  AlertTriangle,
+  CalendarClock,
+  Cpu,
+  Building2,
+  CheckSquare,
+  CalendarDays,
+  Receipt,
+  Search,
 } from "lucide-react";
 import { ROLE_LABELS } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +52,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { UserRole, AppNotification } from "@/types";
 import { useState } from "react";
-import { Bell, CheckCircle2, Info, AlertTriangle, XCircle, CheckCheck } from "lucide-react";
+import { Bell, CheckCircle2, Info, XCircle, CheckCheck } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { notificationService } from "@/services/notification.service";
 import { formatDistanceToNow } from "date-fns";
@@ -56,15 +69,30 @@ const navByRole: Record<UserRole, MobileNavItem[]> = {
     { title: "Dashboard", href: "/student", icon: LayoutDashboard },
     { title: "My Vehicles", href: "/student/vehicles", icon: Car },
     { title: "Parking History", href: "/student/history", icon: History },
+    { title: "Card Registration", href: "/student/card", icon: CreditCard },
+    { title: "Monthly Pass", href: "/student/monthly-pass", icon: CalendarCheck },
+    { title: "Wallet", href: "/student/wallet", icon: Wallet },
+    { title: "Visitor Pass", href: "/student/visitor", icon: UserPlus },
+    { title: "Support", href: "/student/support", icon: LifeBuoy },
   ],
   staff: [
     { title: "Check In/Out", href: "/staff", icon: ScanLine },
+    { title: "Vehicle Lookup", href: "/staff/vehicle-lookup", icon: Search },
+    { title: "Report Incident", href: "/staff/incidents", icon: AlertTriangle },
+    { title: "My Shift", href: "/staff/my-shift", icon: CalendarClock },
+    { title: "Devices", href: "/staff/devices", icon: Cpu },
     { title: "Activity Log", href: "/staff/logs", icon: ClipboardList },
   ],
   admin: [
     { title: "Dashboard", href: "/admin", icon: BarChart3 },
     { title: "Users", href: "/admin/users", icon: Users },
     { title: "Vehicles", href: "/admin/vehicles", icon: Car },
+    { title: "Parking Lots", href: "/admin/parking-lots", icon: Building2 },
+    { title: "Card Requests", href: "/admin/card-requests", icon: CheckSquare },
+    { title: "Shifts", href: "/admin/shifts", icon: CalendarDays },
+    { title: "Incidents", href: "/admin/incidents", icon: AlertTriangle },
+    { title: "Devices", href: "/admin/devices", icon: Cpu },
+    { title: "Transactions", href: "/admin/transactions", icon: Receipt },
     { title: "System Logs", href: "/admin/logs", icon: FileText },
   ],
 };

@@ -47,7 +47,7 @@ export default function VisitorPage() {
   if (isLoading) return <LoadingSkeleton type="page" />;
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-4xl mx-auto">
       <PageHeader title="Đăng ký khách" description="Tạo mã QR gửi xe trước cho bạn bè, người thân đến thăm" />
 
       {showForm ? (

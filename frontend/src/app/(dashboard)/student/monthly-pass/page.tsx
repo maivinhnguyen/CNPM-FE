@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuthStore } from "@/stores/auth-store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { walletService } from "@/services/wallet.service";
+import { monthlyPassService } from "@/services/monthly-pass.service";
 import { vehicleService } from "@/services/vehicle.service";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,10 +41,10 @@ function CountdownBadge({ endDate }: { endDate: string }) {
 function ActivePassCard({ pass }: { pass: MonthlyPass }) {
   const queryClient = useQueryClient();
   const toggleMutation = useMutation({
-    mutationFn: () => walletService.toggleAutoRenew(pass.id),
-    onSuccess: () => {
-      toast.success(pass.isAutoRenew ? "Đã tắt tự động gia hạn" : "Đã bật tự động gia hạn");
-      queryClient.invalidateQueries({ queryKey: ["my-passes"] });
+    mutationFn: () => monthlyPassService.toggleAutoRenew(pass.id),
+    onSuccess: (updated) => {
+      toast.success(updated.isAutoRenew ? "Đã bật tự động gia hạn" : "Đã tắt tự động gia hạn");
+      queryClient.invalidateQueries({ queryKey: ["monthly-passes"] });
     },
     onError: () => toast.error("Có lỗi xảy ra. Vui lòng thử lại."),
   });
@@ -113,7 +114,7 @@ export default function MonthlyPassPage() {
 
   const { data: passes, isLoading: passLoading } = useQuery({
     queryKey: ["monthly-passes", user?.id],
-    queryFn: () => walletService.getMonthlyPasses(user!.id),
+    queryFn: () => monthlyPassService.getMonthlyPasses(),
     enabled: !!user,
   });
 
@@ -133,7 +134,7 @@ export default function MonthlyPassPage() {
     mutationFn: () => {
       const v = vehicles?.find((x) => x.id === selectedVehicle);
       if (!v) throw new Error("Chọn xe");
-      return walletService.registerMonthlyPass(user!.id, v.id, v.licensePlate, `${v.brand} ${v.model}`, selectedMonth);
+      return monthlyPassService.registerMonthlyPass(v.id, v.licensePlate, `${v.brand} ${v.model}`, selectedMonth);
     },
     onSuccess: () => {
       toast.success("Đăng ký vé tháng thành công!");
@@ -159,7 +160,7 @@ export default function MonthlyPassPage() {
   const fmt = (n: number) => n.toLocaleString("vi-VN") + "đ";
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-2xl mx-auto">
       <PageHeader title="Vé Xe Tháng" description="Đăng ký vé tháng để ra vào bãi xe không giới hạn" />
 
       {/* Wallet balance hint */}

@@ -44,7 +44,7 @@ export default function DashboardLayout({
             "flex-1 overflow-auto dashboard-bg",
             user.role === "staff"
               ? "p-4 lg:p-6 flex flex-col"
-              : "p-5 lg:p-7"
+              : "p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12"
           )}
         >
           {children}

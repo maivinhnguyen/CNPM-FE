@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useAuthStore } from "@/stores/auth-store";
 import { useParkingStore } from "@/stores/parking-store";
 import { parkingService } from "@/services/parking.service";
+import { cardService } from "@/services/card.service";
 import { useCamera } from "@/hooks/use-camera";
 import { useCaptureFrame } from "@/hooks/use-capture-frame";
 import { CameraGrid } from "@/features/staff/camera-grid";
@@ -20,6 +21,7 @@ import {
   ParkingCircle,
   AlertTriangle,
   UserPlus,
+  Image as ImageIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -45,6 +47,7 @@ export default function StaffCheckPage() {
     "unregistered" | "face_mismatch" | "plate_mismatch" | null
   >(null);
   const [guestPlate, setGuestPlate] = useState("");
+  const [useMock, setUseMock] = useState(false);
 
 
 
@@ -68,6 +71,7 @@ export default function StaffCheckPage() {
     setFlowState("idle");
     setResult(null);
     setAlertType(null);
+    setUseMock(false);
   }, []);
 
   // ── Lookup ──────────────────────────────────────────────
@@ -95,16 +99,25 @@ export default function StaffCheckPage() {
     }
   }, [handleResetInternal]);
 
-  const handleGuestCheckIn = useCallback(() => {
+  const handleGuestCheckIn = useCallback(async () => {
     if (!guestPlate) {
       toast.error("Vui lòng nhập biển số xe khách");
       return;
     }
     handleResetInternal();
     
-    // Simulate lookup result for a guest
+    // Find an available casual card from the backend
+    const casualCard = await cardService.getAvailableCasual();
+    if (!casualCard) {
+      toast.error("Không còn thẻ khách khả dụng. Vui lòng liên hệ quản lý.");
+      setFlowState("idle");
+      return;
+    }
+    
+    // Build lookup result with the real casual card UID
     const guestResult: VehicleLookupResult = {
       found: true,
+      cardUid: casualCard.cardUid,
       currentStatus: "not_parked",
       vehicle: {
         id: "guest-" + Date.now(),
@@ -127,6 +140,33 @@ export default function StaffCheckPage() {
   // 59F1-12345 = v1 (Nguyen Van An, Honda Wave Alpha) — currently checked-in (record p1) → triggers checkout flow
   const handleMockCheckOutSwipe = () => handleLookup("59F1-12345");
 
+  // Mock data: 99E1-22268 — loads preset plate + placeholder for testing
+  const handleMockPlate = useCallback(() => {
+    handleResetInternal();
+    const mockPlate = "99E1-22268";
+    const mockResult: VehicleLookupResult = {
+      found: true,
+      cardUid: "NFC-MOCK-0001",
+      currentStatus: "not_parked",
+      vehicle: {
+        id: "mock-" + Date.now(),
+        licensePlate: mockPlate,
+        brand: "Honda",
+        model: "Wave",
+        color: "Black",
+        ownerName: "Test User",
+        isRegistered: true,
+      },
+      checkInImages: {
+        plateImage: "/mock-plate-99E1-22268.jpg",
+        personImage: "/mock-person-placeholder.jpg",
+      },
+    };
+    setResult(mockResult);
+    setUseMock(true);
+    setFlowState("review_checkin");
+  }, [handleResetInternal]);
+
   // ── Check-in ────────────────────────────────────────────
 
   const handleCheckIn = async () => {
@@ -139,7 +179,12 @@ export default function StaffCheckPage() {
     const plateBlob = await captureBlob(rearCamera.videoRef);
 
     try {
-      const cardUid = result.cardUid || "CARD-MOCK";
+      const cardUid = result.cardUid;
+      if (!cardUid) {
+        toast.error("Không tìm thấy thẻ RFID cho phương tiện này");
+        setFlowState("review_checkin");
+        return;
+      }
       await parkingService.checkIn(
         cardUid,
         plateBlob ?? new Blob(),
@@ -258,6 +303,9 @@ export default function StaffCheckPage() {
             rearCamera={rearCamera}
             isCheckout={flowState === "review_checkout" || flowState === "alert"}
             storedPlateImage={result?.checkInImages?.plateImage}
+            useMock={useMock}
+            mockFrontImage={result?.checkInImages?.personImage}
+            mockRearImage={result?.checkInImages?.plateImage}
           />
         </div>
 
@@ -299,6 +347,10 @@ export default function StaffCheckPage() {
                   />
                   <Button className="w-full gap-2" variant="secondary" onClick={handleGuestCheckIn}>
                     Cấp Thẻ Khách
+                  </Button>
+                  <Button className="w-full gap-2" variant="outline" onClick={handleMockPlate}>
+                    <ImageIcon className="mr-2 h-4 w-4" />
+                    Mock: 99E1-22268
                   </Button>
                 </div>
               </div>

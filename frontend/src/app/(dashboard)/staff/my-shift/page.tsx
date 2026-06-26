@@ -309,7 +309,7 @@ export default function MyShiftPage() {
     .reduce((acc, s) => acc + (s.totalCheckIns ?? 0), 0);
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-2xl mx-auto">
       <PageHeader title="Ca Làm Của Tôi" description="Quản lý ca trực, bàn giao và theo dõi hoạt động" />
 
       {/* Overview stats */}

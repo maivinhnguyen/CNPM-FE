@@ -170,7 +170,7 @@ export default function IncidentsPage() {
   if (isLoading) return <LoadingSkeleton type="page" />;
 
   return (
-    <div className="space-y-5 max-w-2xl">
+    <div className="space-y-5 max-w-2xl mx-auto">
       <PageHeader
         title="Báo Cáo Sự Cố"
         description="Ghi nhận và theo dõi các sự cố trong ca trực"

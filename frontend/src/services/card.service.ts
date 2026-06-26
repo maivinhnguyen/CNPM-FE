@@ -97,4 +97,12 @@ export const cardService = {
   deleteCard: async (cardUid: string): Promise<void> => {
     return apiClient.delete(ENDPOINTS.CARDS.DELETE(cardUid));
   },
+
+  getAvailableCasual: async (): Promise<Card | null> => {
+    try {
+      return await apiClient.get<Card>(ENDPOINTS.CARDS.AVAILABLE_CASUAL);
+    } catch {
+      return null;
+    }
+  },
 };

@@ -213,7 +213,7 @@ export default function WalletPage() {
     .slice(0, 4); // last 4 months
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-2xl mx-auto">
       <PageHeader title="Ví Tiền" description="Quản lý số dư và nạp tiền tài khoản" />
 
       {/* Balance card */}
@@ -363,15 +363,17 @@ export default function WalletPage() {
       </Card>
 
       {/* Spending Chart */}
-      {chartData.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <BarChart className="h-4 w-4" />
-              Thống kê chi tiêu
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <BarChart className="h-4 w-4" />
+            Thống kê chi tiêu
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {chartData.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-8">Chưa có dữ liệu chi tiêu</p>
+          ) : (
             <div className="h-48 w-full mt-2">
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsBarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
@@ -384,9 +386,9 @@ export default function WalletPage() {
                 </RechartsBarChart>
               </ResponsiveContainer>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </CardContent>
+      </Card>
 
       {/* Info */}
       <Card className="bg-muted/30 border-dashed">

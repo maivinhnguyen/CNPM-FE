@@ -47,7 +47,7 @@ export default function SupportPage() {
   if (isLoading) return <LoadingSkeleton type="page" />;
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-4xl mx-auto">
       <PageHeader title="Trung tâm hỗ trợ" description="Gửi phản hồi hoặc yêu cầu trợ giúp đến Ban quản lý" />
 
       {showForm ? (

@@ -92,19 +92,12 @@ export const parkingService = {
     }
   },
   async lookupVehicle(licensePlate: string): Promise<VehicleLookupResult> {
-    const formattedPlate = licensePlate.replace(/[-\s]/g, "").toLowerCase();
-    
     // 1. Fetch vehicle from backend
     const vehicle = await vehicleService.lookupByPlate(licensePlate);
     if (!vehicle) {
-      // Check if there is an ongoing session for this plate under CARD-MOCK (guest)
+      // Look up by plate — catches guest sessions with real casual cards
       try {
-        const mockSessions = await apiClient.get<ParkingSession[]>(ENDPOINTS.SESSIONS.BY_CARD("CARD-MOCK"));
-        const activeSession = (mockSessions ?? []).find(
-          (s) =>
-            s.status === "ongoing" &&
-            s.plateIn?.replace(/[-\s]/g, "").toLowerCase() === formattedPlate
-        );
+        const activeSession = await apiClient.get<ParkingSession>(ENDPOINTS.SESSIONS.BY_PLATE(licensePlate));
         if (activeSession) {
           const checkInImages =
             activeSession.imgPlateInPath && activeSession.imgPersonInPath
@@ -115,7 +108,7 @@ export const parkingService = {
               : undefined;
           return {
             found: true,
-            cardUid: "CARD-MOCK",
+            cardUid: activeSession.cardUid,
             vehicle: {
               id: "guest-" + Date.now(),
               licensePlate: licensePlate.toUpperCase(),
@@ -130,8 +123,8 @@ export const parkingService = {
             checkInImages,
           };
         }
-      } catch (e) {
-        console.error("Failed to check guest sessions:", e);
+      } catch {
+        // 404 — no ongoing session for this plate
       }
       return { found: false };
     }
@@ -176,25 +169,6 @@ export const parkingService = {
       }
     }
 
-    // Fallback: Check CARD-MOCK for this plate
-    if (!activeSession) {
-      try {
-        const mockSessions = await apiClient.get<ParkingSession[]>(
-          ENDPOINTS.SESSIONS.BY_CARD("CARD-MOCK")
-        );
-        const ongoing = (mockSessions ?? []).find(
-          (s) =>
-            s.status === "ongoing" &&
-            s.plateIn?.replace(/[-\s]/g, "").toLowerCase() === formattedPlate
-        );
-        if (ongoing) {
-          activeSession = ongoing;
-        }
-      } catch {
-        // ignore
-      }
-    }
-
     const checkInImages =
       activeSession?.imgPlateInPath && activeSession?.imgPersonInPath
         ? {
@@ -207,7 +181,7 @@ export const parkingService = {
 
     return {
       found: true,
-      cardUid: activeCard?.cardUid || "CARD-MOCK",
+      cardUid: activeCard?.cardUid,
       vehicle: {
         id: vehicle.id,
         licensePlate: vehicle.licensePlate,
