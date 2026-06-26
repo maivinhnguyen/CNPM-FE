@@ -209,6 +209,7 @@ export default function StaffCheckPage() {
         cardUid,
         plateBlob ?? new Blob(),
         riderBlob ?? new Blob(),
+        useMock ? result.vehicle.licensePlate : undefined,
       );
       incrementOccupancy();
       toast.success(`✅ ${result.vehicle.licensePlate} — Đã ghi nhận vào bãi`);

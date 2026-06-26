@@ -202,11 +202,13 @@ export const parkingService = {
     cardUid: string,
     imgPlateIn: Blob,
     imgPersonIn: Blob,
+    plateIn?: string,
   ): Promise<ParkingSession> {
     const form = new FormData();
     form.append("cardUid", cardUid);
     form.append("imgPlateIn", imgPlateIn);
     form.append("imgPersonIn", imgPersonIn);
+    if (plateIn) form.append("plateIn", plateIn);
 
     return apiClient.post<ParkingSession>(ENDPOINTS.SESSIONS.CHECK_IN, form);
   },
