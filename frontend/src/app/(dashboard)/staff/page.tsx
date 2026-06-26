@@ -169,14 +169,34 @@ export default function StaffCheckPage() {
 
   // ── Check-in ────────────────────────────────────────────
 
+  const fetchBlob = async (url: string): Promise<Blob> => {
+    try {
+      const res = await fetch(url);
+      return res.ok ? await res.blob() : new Blob();
+    } catch {
+      return new Blob();
+    }
+  };
+
   const handleCheckIn = async () => {
     if (!result?.vehicle || !user) return;
 
     setFlowState("capturing");
 
-    // Capture frames from both cameras
-    const riderBlob = await captureBlob(frontCamera.videoRef);
-    const plateBlob = await captureBlob(rearCamera.videoRef);
+    let riderBlob: Blob | null;
+    let plateBlob: Blob | null;
+
+    if (useMock) {
+      riderBlob = await fetchBlob(
+        result.checkInImages?.personImage ?? "/mock-person-placeholder.jpg",
+      );
+      plateBlob = await fetchBlob(
+        result.checkInImages?.plateImage ?? "/mock-plate-99E1-22268.jpg",
+      );
+    } else {
+      riderBlob = await captureBlob(frontCamera.videoRef);
+      plateBlob = await captureBlob(rearCamera.videoRef);
+    }
 
     try {
       const cardUid = result.cardUid;
@@ -206,8 +226,20 @@ export default function StaffCheckPage() {
 
     setFlowState("capturing");
 
-    const riderBlob = await captureBlob(frontCamera.videoRef);
-    const plateBlob = await captureBlob(rearCamera.videoRef);
+    let riderBlob: Blob | null;
+    let plateBlob: Blob | null;
+
+    if (useMock) {
+      riderBlob = await fetchBlob(
+        result.checkInImages?.personImage ?? "/mock-person-placeholder.jpg",
+      );
+      plateBlob = await fetchBlob(
+        result.checkInImages?.plateImage ?? "/mock-plate-99E1-22268.jpg",
+      );
+    } else {
+      riderBlob = await captureBlob(frontCamera.videoRef);
+      plateBlob = await captureBlob(rearCamera.videoRef);
+    }
 
     try {
       await parkingService.checkOut(

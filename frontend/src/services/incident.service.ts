@@ -43,12 +43,19 @@ export const incidentService = {
   lookupVehicleByPlate: async (plate: string) => {
     const vehicle = await vehicleService.lookupByPlate(plate);
     if (!vehicle) return null;
-    
+
     try {
-      const owner = await apiClient.get<{ id: string; email: string; name: string; memberId?: string; studentId?: string }>(ENDPOINTS.USERS.BY_ID(vehicle.ownerId));
+      const user = await apiClient.get<{ id: string; email: string; memberId?: string }>(ENDPOINTS.USERS.BY_ID(vehicle.ownerId));
+      let owner: { id: string; name: string; email: string; studentId?: string };
+      if (user?.memberId) {
+        const member = await apiClient.get<{ id: string; fullName: string; studentId?: string }>(ENDPOINTS.MEMBERS.BY_ID(user.memberId));
+        owner = { id: user.id, name: member?.fullName ?? user.email, email: user.email, studentId: member?.studentId };
+      } else {
+        owner = { id: user.id, name: user.email, email: user.email };
+      }
       return { vehicle, owner };
     } catch {
-      return { vehicle, owner: { id: vehicle.ownerId, name: vehicle.ownerName, email: "", studentId: "" } };
+      return { vehicle, owner: { id: vehicle.ownerId, name: "Không xác định", email: "" } };
     }
   },
 };
